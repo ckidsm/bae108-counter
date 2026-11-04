@@ -96,7 +96,7 @@
 
 ### 요구 사항
 
-- Dart SDK `^3.13.7`을 포함한 Flutter stable (Flutter 3.47.9로 개발). (`pubspec.yaml`)
+- Dart SDK `^3.13.0`을 포함한 Flutter 3.44.0 이상 (Flutter 3.47.9로 개발). (`pubspec.yaml`, `pubspec.lock`)
 - Android: Android SDK, `minSdk`는 Flutter 기본값을 따릅니다. (`android/app/build.gradle.kts`)
 - iOS: Xcode와 CocoaPods가 설치된 macOS, 배포 대상 iOS 15.0. (`ios/Runner.xcodeproj/project.pbxproj`)
 
