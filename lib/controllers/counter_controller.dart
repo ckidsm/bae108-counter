@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:clock/clock.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
@@ -27,26 +28,26 @@ class CounterController extends ChangeNotifier {
     required this._feedbackService,
     required this._wakeLockService,
     CounterSettings settings = CounterRules.defaultSettings,
-    DateTime Function()? clock,
+    DateTime Function()? now,
     this._isTimerEnabled = true,
   }) : _countMode = settings.countMode,
        _intervalSeconds = CounterRules.normalizeIntervalSeconds(
          settings.intervalSeconds,
        ),
        _alertMode = settings.alertMode,
-       _clock = clock ?? DateTime.now;
+       _now = now ?? clock.now;
 
   // 1배마다 소리·진동을 내는 서비스
   final BowFeedbackService _feedbackService;
   // 화면 켜짐을 유지하는 서비스
   final WakeLockService _wakeLockService;
-  // 현재 시각을 돌려주는 함수(테스트에서 고정 가능)
-  final DateTime Function() _clock;
+  // 현재 시각을 돌려주는 함수(기본은 package:clock이라 위젯 테스트의 가짜 시간을 따른다)
+  final DateTime Function() _now;
   // 내부 주기 타이머 사용 여부(테스트에서는 끔)
   final bool _isTimerEnabled;
 
-  // 실제 흐른 시간을 재는 스톱워치(타이머 지연에 영향받지 않기 위함)
-  final Stopwatch _tickStopwatch = Stopwatch();
+  // 마지막으로 시간을 잰 시각(타이머 지연과 무관하게 실제 경과 시간을 재기 위함)
+  DateTime? _lastTickAt;
   // 주기적으로 tick()을 부르는 타이머
   Timer? _tickTimer;
 
@@ -455,7 +456,7 @@ class CounterController extends ChangeNotifier {
     // 준비 시간을 지운다.
     _preparationElapsed = Duration.zero;
     // 처음 시작할 때만 시작 시각을 기록한다(이어서 할 때는 유지).
-    _startedAt ??= _clock();
+    _startedAt ??= _now();
   }
 
   // 1배를 세고 알림을 내며, 108배면 완료 처리한다.
@@ -478,7 +479,7 @@ class CounterController extends ChangeNotifier {
     // 완료 단계로 바꾼다.
     _phase = CounterPhase.completed;
     // 종료 시각을 기록한다.
-    _endedAt = _clock();
+    _endedAt = _now();
     // 남은 간격 시간을 지운다.
     _intervalElapsed = Duration.zero;
     // 타이머를 멈춘다.
@@ -547,20 +548,18 @@ class CounterController extends ChangeNotifier {
       // 시작할 필요 없음
       return;
     }
-    // 실제 경과 시간을 재기 시작한다.
-    _tickStopwatch
-      // 이전 측정값을 지운다.
-      ..reset()
-      // 측정을 시작한다.
-      ..start();
+    // 경과 시간 측정 기준 시각을 지금으로 잡는다.
+    _lastTickAt = _now();
     // 정해진 주기마다 실제로 흐른 시간만큼 tick()을 부른다.
     _tickTimer = Timer.periodic(CounterRules.tickInterval, (_) {
-      // 지난 호출 이후 실제로 흐른 시간
-      final elapsed = _tickStopwatch.elapsed;
-      // 다음 측정을 위해 0부터 다시 잰다.
-      _tickStopwatch.reset();
+      // 현재 시각
+      final currentTime = _now();
+      // 지난 호출 이후 흐른 시간(기기 시계를 뒤로 돌린 경우 0으로 본다)
+      final elapsed = currentTime.difference(_lastTickAt ?? currentTime);
+      // 다음 측정 기준 시각
+      _lastTickAt = currentTime;
       // 흐른 시간만큼 상태를 진행한다.
-      tick(elapsed);
+      tick(elapsed.isNegative ? Duration.zero : elapsed);
     });
   }
 
@@ -570,7 +569,7 @@ class CounterController extends ChangeNotifier {
     _tickTimer?.cancel();
     // 타이머 참조를 지운다.
     _tickTimer = null;
-    // 스톱워치를 멈춘다.
-    _tickStopwatch.stop();
+    // 측정 기준 시각을 지운다.
+    _lastTickAt = null;
   }
 }

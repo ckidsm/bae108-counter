@@ -79,6 +79,12 @@ class CounterRing extends StatelessWidget {
                   innerProgress: innerProgress,
                   // 완료 여부
                   isCompleted: isCompleted,
+                  // 테마의 바탕 면 색(링 바탕)
+                  trackColor: Theme.of(context)
+                      .colorScheme
+                      .surfaceContainerHighest,
+                  // 안쪽 링 색(버튼색)
+                  innerRingColor: context.accentColor,
                 ),
                 // 가운데 숫자와 설명
                 child: _CounterLabel(
@@ -134,7 +140,7 @@ class _CounterLabel extends StatelessWidget {
             // 굵게
             fontWeight: FontWeight.w600,
             // 완료 시 녹색, 아니면 기본 글자색
-            color: isCompleted ? AppColors.completed : AppColors.textPrimary,
+            color: isCompleted ? AppColors.completed : context.textPrimaryColor,
             // 숫자 폭 고정
             fontFeatures: const <FontFeature>[FontFeature.tabularFigures()],
           ),
@@ -145,7 +151,7 @@ class _CounterLabel extends StatelessWidget {
           captionText,
           // 보조 글자색
           style: textTheme.titleMedium?.copyWith(
-            color: AppColors.textSecondary,
+            color: context.textSecondaryColor,
           ),
         ),
       ],
@@ -160,6 +166,8 @@ class _CounterRingPainter extends CustomPainter {
     required this.progress,
     required this.innerProgress,
     required this.isCompleted,
+    required this.trackColor,
+    required this.innerRingColor,
   });
 
   // 바깥 진행 링 두께
@@ -183,6 +191,10 @@ class _CounterRingPainter extends CustomPainter {
   final double innerProgress;
   // 완료 여부
   final bool isCompleted;
+  // 링 바탕 색
+  final Color trackColor;
+  // 안쪽 링 색(버튼색)
+  final Color innerRingColor;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -202,7 +214,7 @@ class _CounterRingPainter extends CustomPainter {
       center,
       outerRadius,
       _fullSweep,
-      AppColors.track,
+      trackColor,
       _progressStrokeWidth,
     );
     // 완료면 녹색으로 가득, 아니면 주황색으로 진행률만큼 그린다.
@@ -226,16 +238,16 @@ class _CounterRingPainter extends CustomPainter {
       center,
       innerRadius,
       _fullSweep,
-      AppColors.track,
+      trackColor,
       _innerStrokeWidth,
     );
-    // 안쪽 링(다음 절까지 남은 시간)을 금빛으로 그린다.
+    // 안쪽 링(다음 절까지 남은 시간)을 버튼색으로 그린다.
     _drawArc(
       canvas,
       center,
       innerRadius,
       _fullSweep * innerProgress.clamp(0, 1),
-      AppColors.gold,
+      innerRingColor,
       _innerStrokeWidth,
     );
     // 완료면 바깥 녹색 테두리를 그린다.
@@ -299,6 +311,8 @@ class _CounterRingPainter extends CustomPainter {
     // 값이 하나라도 바뀌었을 때만 다시 그린다.
     return oldDelegate.progress != progress ||
         oldDelegate.innerProgress != innerProgress ||
-        oldDelegate.isCompleted != isCompleted;
+        oldDelegate.isCompleted != isCompleted ||
+        oldDelegate.trackColor != trackColor ||
+        oldDelegate.innerRingColor != innerRingColor;
   }
 }

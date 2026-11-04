@@ -246,4 +246,99 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get emptyHistory => '还没有保存的记录';
+
+  @override
+  String get settingsTooltip => '设置';
+
+  @override
+  String get settingsTitle => '设置';
+
+  @override
+  String get settingsIntervalSection => '计数间隔';
+
+  @override
+  String get settingsIntervalDescription => '自动间隔模式下每计一拜的间隔';
+
+  @override
+  String get settingsThemeSection => '颜色主题';
+
+  @override
+  String get themeBlack => '黑色';
+
+  @override
+  String get themeCharcoal => '炭灰';
+
+  @override
+  String get themeWarmBrown => '暖棕';
+
+  @override
+  String get themeNavy => '藏青';
+
+  @override
+  String get settingsCalendarSection => '日历记录';
+
+  @override
+  String get calendarSyncTitle => '将修行记录添加到日历';
+
+  @override
+  String get calendarSyncDescription => '保存记录时，将其作为日程添加到所选日历（如 Google 日历）';
+
+  @override
+  String get calendarTargetLabel => '记录到的日历';
+
+  @override
+  String get calendarNotSelected => '未选择';
+
+  @override
+  String get calendarPickerTitle => '选择日历';
+
+  @override
+  String get calendarEmpty => '没有可写入的日历。请确认设备上已添加 Google 账号';
+
+  @override
+  String get calendarPermissionDenied => '未获得日历权限。请在设备设置中允许访问日历';
+
+  @override
+  String get calendarLoadFailed => '无法加载日历';
+
+  @override
+  String get calendarEventTitle => '108拜 修行';
+
+  @override
+  String calendarEventDescription(int count, String duration) {
+    return '$count拜 · 用时 $duration';
+  }
+
+  @override
+  String get recordSavedToCalendar => '记录已保存并添加到日历';
+
+  @override
+  String get recordSavedCalendarFailed => '记录已保存，但未能添加到日历';
+
+  @override
+  String get themeBackgroundLabel => '背景色';
+
+  @override
+  String get themeAccentLabel => '按钮颜色';
+
+  @override
+  String get themeDarkGray => '深灰';
+
+  @override
+  String get themeWhite => '白色';
+
+  @override
+  String get themeLightGray => '浅灰';
+
+  @override
+  String get accentGold => '金色';
+
+  @override
+  String get accentBlue => '蓝色';
+
+  @override
+  String get accentDeepBlue => '深蓝';
+
+  @override
+  String get accentGray => '灰色';
 }

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
+import 'controllers/app_settings_controller.dart';
 import 'l10n/generated/app_localizations.dart';
 import 'screens/main_screen.dart';
 import 'services/bow_feedback_service.dart';
+import 'services/calendar_sync_service.dart';
 import 'services/practice_record_repository.dart';
 import 'services/wake_lock_service.dart';
 import 'theme/app_theme.dart';
@@ -20,6 +22,8 @@ class Bae108App extends StatelessWidget {
     required this.repository,
     required this.feedbackService,
     required this.wakeLockService,
+    required this.appSettingsController,
+    required this.calendarSyncService,
   });
 
   /// Stores practice records and settings.
@@ -31,18 +35,36 @@ class Bae108App extends StatelessWidget {
   /// Keeps the screen on during a practice.
   final WakeLockService wakeLockService;
 
+  /// Holds the theme and calendar settings.
+  final AppSettingsController appSettingsController;
+
+  /// Adds saved records to the device calendar.
+  final CalendarSyncService calendarSyncService;
+
   @override
   Widget build(BuildContext context) {
+    // 테마 설정이 바뀌면 앱 전체를 다시 그린다.
+    return ListenableBuilder(
+      // 감시 대상
+      listenable: appSettingsController,
+      // 앱
+      builder: (context, _) => _buildMaterialApp(),
+    );
+  }
+
+  // 테마·번역·첫 화면을 설정한 MaterialApp
+  Widget _buildMaterialApp() {
     // 앱 설정
     return MaterialApp(
       // 앱 전환기에 보이는 이름(번역 문구)
       onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
       // 디버그 띠 숨김
       debugShowCheckedModeBanner: false,
-      // 다크 테마
-      theme: AppTheme.buildDarkTheme(),
-      // 항상 다크 모드
-      themeMode: ThemeMode.dark,
+      // 선택한 배경 프리셋의 다크 테마
+      theme: AppTheme.build(
+        appSettingsController.settings.backgroundPreset,
+        appSettingsController.settings.accentPreset,
+      ),
       // 앱 번역과 Material·Cupertino 기본 번역
       localizationsDelegates: const <LocalizationsDelegate<dynamic>>[
         // 앱 문구
@@ -64,6 +86,10 @@ class Bae108App extends StatelessWidget {
         feedbackService: feedbackService,
         // 화면 켜짐 서비스
         wakeLockService: wakeLockService,
+        // 앱 설정
+        appSettingsController: appSettingsController,
+        // 캘린더 서비스
+        calendarSyncService: calendarSyncService,
       ),
     );
   }

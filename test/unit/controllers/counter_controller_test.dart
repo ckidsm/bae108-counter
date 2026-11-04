@@ -6,7 +6,7 @@ import 'package:bae108_counter/models/counter_phase.dart';
 import 'package:bae108_counter/models/counter_settings.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../support/fake_services.dart';
+import '../../support/fake_services.dart';
 
 // 테스트에서 고정해 쓰는 현재 시각
 final DateTime _fixedNow = DateTime(2026, 11, 4, 14, 0);
@@ -35,7 +35,7 @@ void main() {
         intervalSeconds: _intervalSeconds,
         alertMode: alertMode,
       ),
-      clock: () => _fixedNow,
+      now: () => _fixedNow,
       isTimerEnabled: false,
     );
   }

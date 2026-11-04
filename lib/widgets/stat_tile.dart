@@ -27,16 +27,21 @@ class StatTile extends StatelessWidget {
     // 세로로 쌓는다.
     return Column(
       children: <Widget>[
-        // 값
-        Text(
-          // 값 문구
-          value,
-          // 굵은 큰 글자
-          style: textTheme.titleLarge?.copyWith(
-            // 굵게
-            fontWeight: FontWeight.w700,
-            // 기본 글자색
-            color: AppColors.textPrimary,
+        // 값(칸보다 길면 글자를 줄여 한 줄에 맞춘다)
+        FittedBox(
+          // 줄이기만 하고 키우지는 않는다.
+          fit: BoxFit.scaleDown,
+          // 값 글자
+          child: Text(
+            // 값 문구
+            value,
+            // 굵은 큰 글자
+            style: textTheme.titleLarge?.copyWith(
+              // 굵게
+              fontWeight: FontWeight.w700,
+              // 기본 글자색
+              color: context.textPrimaryColor,
+            ),
           ),
         ),
         // 간격
@@ -45,8 +50,12 @@ class StatTile extends StatelessWidget {
         Text(
           // 이름 문구
           label,
+          // 가운데 정렬
+          textAlign: TextAlign.center,
           // 보조 글자
-          style: textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
+          style: textTheme.bodySmall?.copyWith(
+            color: context.textSecondaryColor,
+          ),
         ),
       ],
     );

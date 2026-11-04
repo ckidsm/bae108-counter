@@ -1,5 +1,8 @@
 import 'package:bae108_counter/models/alert_mode.dart';
+import 'package:bae108_counter/models/bow_session.dart';
+import 'package:bae108_counter/models/calendar_target.dart';
 import 'package:bae108_counter/services/bow_feedback_service.dart';
+import 'package:bae108_counter/services/calendar_sync_service.dart';
 import 'package:bae108_counter/services/wake_lock_service.dart';
 
 /*────────────────────────────────────────────────────────────────────────
@@ -64,5 +67,80 @@ class FakeWakeLockService implements WakeLockService {
   Future<void> disable() async {
     // 꺼짐으로 바꾼다.
     isEnabled = false;
+  }
+}
+
+/*────────────────────────────────────────────────────────────────────────
+ Purpose  : Records one calendar event added through the fake calendar service.
+ Author   : YUNDEOKSOO                          Created : 2026-11-04
+────────────────────────────────────────────────────────────────────────*/
+/// 가짜 캘린더에 추가된 일정 1건.
+class RecordedCalendarEvent {
+  /// Creates a recorded event.
+  const RecordedCalendarEvent(this.session, this.calendar, this.text);
+
+  /// The practice that was added.
+  final BowSession session;
+
+  /// The calendar the event was added to.
+  final CalendarTarget calendar;
+
+  /// The event title and description.
+  final CalendarEventText text;
+}
+
+/*────────────────────────────────────────────────────────────────────────
+ Purpose  : Replaces the device calendar plugin with configurable in-memory behavior.
+ Author   : YUNDEOKSOO                          Created : 2026-11-04
+────────────────────────────────────────────────────────────────────────*/
+/// 기기 캘린더 대신 메모리에서 동작하는 가짜 캘린더 서비스.
+class FakeCalendarSyncService implements CalendarSyncService {
+  /// Creates the fake with the given writable [calendars].
+  FakeCalendarSyncService({this.calendars = const <CalendarTarget>[]});
+
+  /// The calendars returned by [loadWritableCalendars].
+  List<CalendarTarget> calendars;
+
+  /// When set, every call fails with this reason.
+  CalendarSyncFailure? failure;
+
+  /// The events added so far.
+  final List<RecordedCalendarEvent> addedEvents = <RecordedCalendarEvent>[];
+
+  @override
+  Future<void> ensureAccess() async {
+    // 실패하도록 설정했으면 예외를 던진다.
+    _throwIfFailing();
+  }
+
+  @override
+  Future<List<CalendarTarget>> loadWritableCalendars() async {
+    // 실패하도록 설정했으면 예외를 던진다.
+    _throwIfFailing();
+    // 설정된 캘린더 목록
+    return calendars;
+  }
+
+  @override
+  Future<void> addPracticeEvent(
+    BowSession session,
+    CalendarTarget calendar,
+    CalendarEventText text,
+  ) async {
+    // 실패하도록 설정했으면 예외를 던진다.
+    _throwIfFailing();
+    // 추가된 일정을 기록한다.
+    addedEvents.add(RecordedCalendarEvent(session, calendar, text));
+  }
+
+  // 설정된 실패 사유가 있으면 예외를 던진다.
+  void _throwIfFailing() {
+    // 실패 사유
+    final configuredFailure = failure;
+    // 실패하도록 설정했으면 예외
+    if (configuredFailure != null) {
+      // 테스트용 예외
+      throw CalendarSyncException(configuredFailure, 'fake failure');
+    }
   }
 }

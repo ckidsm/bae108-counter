@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../models/app_settings.dart';
 import '../models/bow_session.dart';
 import '../models/counter_settings.dart';
 
@@ -20,6 +21,10 @@ abstract final class PreferenceKeys {
   // 카운터 설정(JSON 객체 문자열)을 저장하는 키
   /// The key storing the counter settings as a JSON object string.
   static const String counterSettings = 'counter_settings_v1';
+
+  // 앱 설정(테마·캘린더, JSON 객체 문자열)을 저장하는 키
+  /// The key storing the app settings as a JSON object string.
+  static const String appSettings = 'app_settings_v1';
 }
 
 /*────────────────────────────────────────────────────────────────────────
@@ -160,6 +165,62 @@ final class PracticeRecordRepository {
       // 실패한 키를 남긴다.
       debugPrint(
         '[PracticeRecordRepository] 설정 저장 실패 ${PreferenceKeys.counterSettings}',
+      );
+    }
+  }
+
+  /*──────────────────────────────────────────────────────────────────────
+   Purpose  : Loads the app-wide settings, or defaults when none are stored.
+   Author   : YUNDEOKSOO                        Created : 2026-11-04
+  ──────────────────────────────────────────────────────────────────────*/
+  /// Loads the stored app settings, or the defaults when none are stored.
+  AppSettings loadAppSettings() {
+    // 저장된 앱 설정 JSON을 읽는다.
+    final storedJson = _preferences.getString(PreferenceKeys.appSettings);
+    // 저장된 값이 없으면 기본값을 쓴다.
+    if (storedJson == null) {
+      // 기본 앱 설정
+      return const AppSettings();
+    }
+    // 설정 데이터가 깨졌을 수 있으므로 형식 오류를 처리한다.
+    try {
+      // JSON 객체를 앱 설정으로 바꾼다.
+      return AppSettings.fromJson(
+        jsonDecode(storedJson) as Map<String, dynamic>,
+      );
+    } on FormatException catch (error) {
+      // 해석 실패 원인을 남긴다.
+      debugPrint(
+        '[PracticeRecordRepository] 앱 설정 JSON 해석 실패 ${PreferenceKeys.appSettings}: $error',
+      );
+      // 기본 설정으로 계속 진행한다.
+      return const AppSettings();
+    } on TypeError catch (error) {
+      // 구조 오류 원인을 남긴다.
+      debugPrint(
+        '[PracticeRecordRepository] 앱 설정 JSON 구조 오류 ${PreferenceKeys.appSettings}: $error',
+      );
+      // 기본 설정으로 계속 진행한다.
+      return const AppSettings();
+    }
+  }
+
+  /*──────────────────────────────────────────────────────────────────────
+   Purpose  : Stores the app-wide settings.
+   Author   : YUNDEOKSOO                        Created : 2026-11-04
+  ──────────────────────────────────────────────────────────────────────*/
+  /// Stores [settings] so they are restored on the next launch.
+  Future<void> saveAppSettings(AppSettings settings) async {
+    // 앱 설정을 JSON 문자열로 저장한다.
+    final isSaved = await _preferences.setString(
+      PreferenceKeys.appSettings,
+      jsonEncode(settings.toJson()),
+    );
+    // 저장 실패는 다음 실행에 기본값을 쓰는 정도의 영향이므로 기록만 남긴다.
+    if (!isSaved) {
+      // 실패한 키를 남긴다.
+      debugPrint(
+        '[PracticeRecordRepository] 앱 설정 저장 실패 ${PreferenceKeys.appSettings}',
       );
     }
   }

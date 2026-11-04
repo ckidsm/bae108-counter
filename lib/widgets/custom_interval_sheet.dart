@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../controllers/counter_rules.dart';
 import '../l10n/generated/app_localizations.dart';
-import '../theme/app_colors.dart';
-import 'display_formats.dart';
+import 'interval_slider.dart';
 
 /*────────────────────────────────────────────────────────────────────────
  Purpose  : Lets the user pick an interval from 5 seconds to 3 minutes in 5-second steps.
@@ -30,8 +29,6 @@ class _CustomIntervalSheetState extends State<CustomIntervalSheet> {
   static const double _bottomPadding = 24;
   // 항목 사이 간격
   static const double _itemSpacing = 12;
-  // 현재 값 글자 크기
-  static const double _valueFontSize = 40;
 
   // 슬라이더가 가리키는 초
   late int _selectedSeconds = CounterRules.normalizeIntervalSeconds(
@@ -42,13 +39,6 @@ class _CustomIntervalSheetState extends State<CustomIntervalSheet> {
   Widget build(BuildContext context) {
     // 번역 문구
     final localizations = AppLocalizations.of(context);
-    // 시간 문구 형식 도우미
-    final formatter = DisplayFormatter(localizations);
-    // 5초 단위 칸 수 ((180 - 5) / 5 = 35칸)
-    const divisionCount =
-        (CounterRules.maximumIntervalSeconds -
-            CounterRules.minimumIntervalSeconds) ~/
-        CounterRules.intervalStepSeconds;
     // 시트 내용
     return SafeArea(
       // 여백
@@ -74,56 +64,13 @@ class _CustomIntervalSheetState extends State<CustomIntervalSheet> {
             ),
             // 간격
             const SizedBox(height: _itemSpacing),
-            // 현재 선택값
-            Text(
-              // "1분 30초" 같은 값
-              formatter.formatDuration(Duration(seconds: _selectedSeconds)),
-              // 큰 금빛 글자
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                // 글자 크기
-                fontSize: _valueFontSize,
-                // 금빛
-                color: AppColors.gold,
-              ),
-            ),
-            // 5초~3분 슬라이더
-            Slider(
+            // 값과 슬라이더
+            IntervalSlider(
               // 현재 값
-              value: _selectedSeconds.toDouble(),
-              // 최솟값 5초
-              min: CounterRules.minimumIntervalSeconds.toDouble(),
-              // 최댓값 180초
-              max: CounterRules.maximumIntervalSeconds.toDouble(),
-              // 5초 단위 칸
-              divisions: divisionCount,
+              seconds: _selectedSeconds,
               // 움직이면 값을 갱신한다.
-              onChanged: (value) => setState(
-                // 5초 단위로 보정해 저장한다.
-                () => _selectedSeconds = CounterRules.normalizeIntervalSeconds(
-                  value.round(),
-                ),
-              ),
-            ),
-            // 허용 범위 안내
-            Text(
-              // "5초 ~ 3분, 5초 단위"
-              localizations.customIntervalRange(
-                // 최솟값 문구
-                formatter.formatDuration(
-                  const Duration(seconds: CounterRules.minimumIntervalSeconds),
-                ),
-                // 최댓값 문구
-                formatter.formatDuration(
-                  const Duration(seconds: CounterRules.maximumIntervalSeconds),
-                ),
-                // 단위 문구
-                formatter.formatDuration(
-                  const Duration(seconds: CounterRules.intervalStepSeconds),
-                ),
-              ),
-              // 보조 글자
-              style: Theme.of(context).textTheme.bodySmall
-                  ?.copyWith(color: AppColors.textSecondary),
+              onChanged: (seconds) =>
+                  setState(() => _selectedSeconds = seconds),
             ),
             // 간격
             const SizedBox(height: _itemSpacing),

@@ -110,7 +110,9 @@ class _SegmentBar extends StatelessWidget {
             // 막대 두께
             minHeight: SegmentProgressBars._barHeight,
             // 바탕색
-            backgroundColor: AppColors.track,
+            backgroundColor: Theme.of(context)
+                .colorScheme
+                .surfaceContainerHighest,
             // 완료 시 녹색, 아니면 주황색
             color: isCompleted ? AppColors.completed : AppColors.progress,
           ),
@@ -123,7 +125,7 @@ class _SegmentBar extends StatelessWidget {
           label,
           // 작은 보조 글자
           style: Theme.of(context).textTheme.labelSmall
-              ?.copyWith(color: AppColors.textSecondary),
+              ?.copyWith(color: context.textSecondaryColor),
         ),
       ],
     );

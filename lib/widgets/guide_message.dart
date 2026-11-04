@@ -27,10 +27,12 @@ class GuideMessage extends StatelessWidget {
       messageOf(AppLocalizations.of(context), controller),
       // 가운데 정렬
       textAlign: TextAlign.center,
-      // 완료 시 녹색, 아니면 금빛
+      // 완료 시 녹색, 아니면 버튼색
       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
         // 글자색
-        color: controller.isCompleted ? AppColors.completed : AppColors.gold,
+        color: controller.isCompleted
+            ? AppColors.completed
+            : context.accentColor,
       ),
     );
   }

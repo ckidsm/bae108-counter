@@ -29,7 +29,7 @@ class SectionLabel extends StatelessWidget {
         text,
         // 작은 보조 글자
         style: Theme.of(context).textTheme.labelLarge
-            ?.copyWith(color: AppColors.textSecondary),
+            ?.copyWith(color: context.textSecondaryColor),
       ),
     );
   }

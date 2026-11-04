@@ -12,77 +12,109 @@
   "intervalCustomSelected": "직접 · {duration}",
   "@intervalCustomSelected": {
     "placeholders": {
-      "duration": { "type": "String" }
+      "duration": {
+        "type": "String"
+      }
     }
   },
   "customIntervalSheetTitle": "절 간격 직접 설정",
   "customIntervalRange": "{minimum} ~ {maximum}, {step} 단위",
   "@customIntervalRange": {
     "placeholders": {
-      "minimum": { "type": "String" },
-      "maximum": { "type": "String" },
-      "step": { "type": "String" }
+      "minimum": {
+        "type": "String"
+      },
+      "maximum": {
+        "type": "String"
+      },
+      "step": {
+        "type": "String"
+      }
     }
   },
   "customIntervalApply": "적용",
   "durationSeconds": "{seconds}초",
   "@durationSeconds": {
     "placeholders": {
-      "seconds": { "type": "int" }
+      "seconds": {
+        "type": "int"
+      }
     }
   },
   "durationMinutes": "{minutes}분",
   "@durationMinutes": {
     "placeholders": {
-      "minutes": { "type": "int" }
+      "minutes": {
+        "type": "int"
+      }
     }
   },
   "durationMinutesSeconds": "{minutes}분 {seconds}초",
   "@durationMinutesSeconds": {
     "placeholders": {
-      "minutes": { "type": "int" },
-      "seconds": { "type": "int" }
+      "minutes": {
+        "type": "int"
+      },
+      "seconds": {
+        "type": "int"
+      }
     }
   },
   "durationHoursMinutes": "{hours}시간 {minutes}분",
   "@durationHoursMinutes": {
     "placeholders": {
-      "hours": { "type": "int" },
-      "minutes": { "type": "int" }
+      "hours": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      }
     }
   },
   "counterTarget": "/ {target}",
   "@counterTarget": {
     "placeholders": {
-      "target": { "type": "int" }
+      "target": {
+        "type": "int"
+      }
     }
   },
   "preparationLabel": "준비",
   "segmentRange": "{start}–{end}",
   "@segmentRange": {
     "placeholders": {
-      "start": { "type": "int" },
-      "end": { "type": "int" }
+      "start": {
+        "type": "int"
+      },
+      "end": {
+        "type": "int"
+      }
     }
   },
   "guideIdleTap": "원을 탭하거나 시작을 누르세요",
   "guideIdleAuto": "시작하면 {seconds}초 준비 후 셈을 시작합니다",
   "@guideIdleAuto": {
     "placeholders": {
-      "seconds": { "type": "int" }
+      "seconds": {
+        "type": "int"
+      }
     }
   },
   "guidePreparing": "자세를 갖추세요 · {seconds}초 후 시작",
   "@guidePreparing": {
     "placeholders": {
-      "seconds": { "type": "int" }
+      "seconds": {
+        "type": "int"
+      }
     }
   },
   "guideRunningTap": "원을 탭할 때마다 1배씩 셉니다",
   "guideRunningAuto": "다음 절까지 {seconds}초",
   "@guideRunningAuto": {
     "placeholders": {
-      "seconds": { "type": "int" }
+      "seconds": {
+        "type": "int"
+      }
     }
   },
   "guidePaused": "일시정지 중 · 이어서를 누르세요",
@@ -100,7 +132,9 @@
   "resetConfirmMessage": "지금까지 센 {count}배가 사라집니다.",
   "@resetConfirmMessage": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "dialogCancel": "취소",
@@ -113,20 +147,28 @@
   "averageSecondsValue": "{seconds}초",
   "@averageSecondsValue": {
     "placeholders": {
-      "seconds": { "type": "String" }
+      "seconds": {
+        "type": "String"
+      }
     }
   },
   "streakDaysValue": "{days}일",
   "@streakDaysValue": {
     "placeholders": {
-      "days": { "type": "int" }
+      "days": {
+        "type": "int"
+      }
     }
   },
   "timeRange": "{start} → {end}",
   "@timeRange": {
     "placeholders": {
-      "start": { "type": "String" },
-      "end": { "type": "String" }
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
     }
   },
   "memoHint": "오늘의 한 줄 메모",
@@ -147,16 +189,61 @@
   "monthlySessionValue": "{count}회",
   "@monthlySessionValue": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "monthlyBowLabel": "누적 절 수",
   "monthlyBowValue": "{count}절",
   "@monthlyBowValue": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "recentSessionsTitle": "최근 수행",
-  "emptyHistory": "아직 저장된 기록이 없습니다"
+  "emptyHistory": "아직 저장된 기록이 없습니다",
+  "settingsTooltip": "설정",
+  "settingsTitle": "설정",
+  "settingsIntervalSection": "카운트 간격",
+  "settingsIntervalDescription": "자동 간격 방식에서 1배를 세는 간격입니다",
+  "settingsThemeSection": "색상 테마",
+  "themeBlack": "검정",
+  "themeCharcoal": "차콜",
+  "themeWarmBrown": "웜 브라운",
+  "themeNavy": "네이비",
+  "settingsCalendarSection": "캘린더 기록",
+  "calendarSyncTitle": "수행 기록을 캘린더에 추가",
+  "calendarSyncDescription": "기록을 저장하면 선택한 캘린더(Google 캘린더 등)에 일정으로 추가합니다",
+  "calendarTargetLabel": "기록할 캘린더",
+  "calendarNotSelected": "선택 안 됨",
+  "calendarPickerTitle": "캘린더 선택",
+  "calendarEmpty": "쓸 수 있는 캘린더가 없습니다. 기기에 Google 계정이 추가되어 있는지 확인해 주세요",
+  "calendarPermissionDenied": "캘린더 권한이 없습니다. 기기 설정에서 캘린더 접근을 허용해 주세요",
+  "calendarLoadFailed": "캘린더 목록을 불러오지 못했습니다",
+  "calendarEventTitle": "108배 수행",
+  "calendarEventDescription": "{count}배 · 소요 시간 {duration}",
+  "@calendarEventDescription": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "recordSavedToCalendar": "기록을 저장하고 캘린더에 추가했습니다",
+  "recordSavedCalendarFailed": "기록은 저장했지만 캘린더에 추가하지 못했습니다",
+  "themeBackgroundLabel": "배경색",
+  "themeAccentLabel": "버튼색",
+  "themeDarkGray": "다크 그레이",
+  "themeWhite": "화이트",
+  "themeLightGray": "라이트 그레이",
+  "accentGold": "금빛",
+  "accentBlue": "블루",
+  "accentDeepBlue": "딥 블루",
+  "accentGray": "그레이"
 }

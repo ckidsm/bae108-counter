@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'app.dart';
+import 'controllers/app_settings_controller.dart';
 import 'services/device_bow_feedback_service.dart';
+import 'services/device_calendar_sync_service.dart';
 import 'services/practice_record_repository.dart';
 import 'services/wake_lock_service.dart';
 
@@ -16,15 +18,21 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // 기록과 설정을 읽을 저장소를 연다.
   final preferences = await SharedPreferences.getInstance();
+  // shared_preferences 기반 저장소
+  final repository = PracticeRecordRepository(preferences);
   // 앱을 실행한다.
   runApp(
     Bae108App(
-      // shared_preferences 기반 저장소
-      repository: PracticeRecordRepository(preferences),
+      // 기록 저장소
+      repository: repository,
       // 실제 기기 소리·진동 서비스
       feedbackService: DeviceBowFeedbackService(),
       // wakelock_plus 기반 화면 켜짐 서비스
       wakeLockService: const PluginWakeLockService(),
+      // 저장된 테마·캘린더 설정
+      appSettingsController: AppSettingsController(repository),
+      // 기기 캘린더(Google 계정 캘린더 포함) 서비스
+      calendarSyncService: DeviceCalendarSyncService(),
     ),
   );
 }
