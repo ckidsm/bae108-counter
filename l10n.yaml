@@ -1,0 +1,10 @@
+# 번역 원본(.arb) 파일이 있는 폴더
+arb-dir: lib/l10n
+# 기준 언어(한국어) 번역 파일
+template-arb-file: app_ko.arb
+# 생성될 지역화 클래스 파일 이름
+output-localization-file: app_localizations.dart
+# 생성 코드를 저장할 폴더
+output-dir: lib/l10n/generated
+# 번역 누락 시 빌드 단계에서 알 수 있도록 null 대신 오류를 낸다.
+nullable-getter: false

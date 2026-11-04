@@ -1,0 +1,249 @@
+// ignore: unused_import
+import 'package:intl/intl.dart' as intl;
+
+import 'app_localizations.dart';
+
+// ignore_for_file: type=lint
+
+/// The translations for Japanese (`ja`).
+class AppLocalizationsJa extends AppLocalizations {
+  AppLocalizationsJa([String locale = 'ja']) : super(locale);
+
+  @override
+  String get appTitle => '108拝カウンター';
+
+  @override
+  String get mainTitle => '今日の108拝';
+
+  @override
+  String get keepScreenOnNotice => '108拝まで画面をオンに保持';
+
+  @override
+  String get historyTooltip => '修行記録';
+
+  @override
+  String get countModeTitle => 'カウント方式';
+
+  @override
+  String get countModeTap => 'タップ';
+
+  @override
+  String get countModeAuto => '自動間隔';
+
+  @override
+  String get intervalTitle => '拝の間隔';
+
+  @override
+  String get intervalCustom => 'カスタム';
+
+  @override
+  String intervalCustomSelected(String duration) {
+    return 'カスタム · $duration';
+  }
+
+  @override
+  String get customIntervalSheetTitle => '拝の間隔をカスタム設定';
+
+  @override
+  String customIntervalRange(String minimum, String maximum, String step) {
+    return '$minimum〜$maximum、$step単位';
+  }
+
+  @override
+  String get customIntervalApply => '適用';
+
+  @override
+  String durationSeconds(int seconds) {
+    return '$seconds秒';
+  }
+
+  @override
+  String durationMinutes(int minutes) {
+    return '$minutes分';
+  }
+
+  @override
+  String durationMinutesSeconds(int minutes, int seconds) {
+    return '$minutes分$seconds秒';
+  }
+
+  @override
+  String durationHoursMinutes(int hours, int minutes) {
+    return '$hours時間$minutes分';
+  }
+
+  @override
+  String counterTarget(int target) {
+    return '/ $target';
+  }
+
+  @override
+  String get preparationLabel => '準備';
+
+  @override
+  String segmentRange(int start, int end) {
+    return '$start–$end';
+  }
+
+  @override
+  String get guideIdleTap => '円をタップするかスタートを押してください';
+
+  @override
+  String guideIdleAuto(int seconds) {
+    return 'スタート後、$seconds秒の準備ののちカウントを始めます';
+  }
+
+  @override
+  String guidePreparing(int seconds) {
+    return '姿勢を整えてください · $seconds秒後に開始';
+  }
+
+  @override
+  String get guideRunningTap => '円をタップするたびに1拝ずつ数えます';
+
+  @override
+  String guideRunningAuto(int seconds) {
+    return '次の拝まで$seconds秒';
+  }
+
+  @override
+  String get guidePaused => '一時停止中 · 再開を押してください';
+
+  @override
+  String get guideCompleted => '108拝をすべて終えました';
+
+  @override
+  String get alertModeTitle => '通知方法';
+
+  @override
+  String get alertModeBell => '鐘の音';
+
+  @override
+  String get alertModeVibration => 'バイブ';
+
+  @override
+  String get alertModeSilent => '無音';
+
+  @override
+  String get buttonStart => 'スタート';
+
+  @override
+  String get buttonResume => '再開';
+
+  @override
+  String get buttonPause => '一時停止';
+
+  @override
+  String get buttonDedication => '回向する';
+
+  @override
+  String get buttonReset => '最初から';
+
+  @override
+  String get resetConfirmTitle => '最初からやり直しますか？';
+
+  @override
+  String resetConfirmMessage(int count) {
+    return 'これまでに数えた$count拝が消えます。';
+  }
+
+  @override
+  String get dialogCancel => 'キャンセル';
+
+  @override
+  String get dialogConfirm => 'OK';
+
+  @override
+  String get completionTitle => '108拝 回向';
+
+  @override
+  String get completionSubtitle => '今日の精進を一切に回向します';
+
+  @override
+  String get completionDuration => '所要時間';
+
+  @override
+  String get completionAverage => '1拝平均';
+
+  @override
+  String get completionStreak => '連続日数';
+
+  @override
+  String averageSecondsValue(String seconds) {
+    return '$seconds秒';
+  }
+
+  @override
+  String streakDaysValue(int days) {
+    return '$days日';
+  }
+
+  @override
+  String timeRange(String start, String end) {
+    return '$start → $end';
+  }
+
+  @override
+  String get memoHint => '今日のひとことメモ';
+
+  @override
+  String get saveRecord => '記録を保存';
+
+  @override
+  String get restartPractice => 'もう一度';
+
+  @override
+  String get discardConfirmTitle => '記録を保存しませんか？';
+
+  @override
+  String get discardConfirmMessage => '保存せずに再開すると、今回の修行は記録に残りません。';
+
+  @override
+  String get discardConfirmAction => '保存しない';
+
+  @override
+  String get recordSaved => '記録を保存しました';
+
+  @override
+  String get recordSaveFailed => '記録を保存できませんでした。もう一度お試しください';
+
+  @override
+  String get historyTitle => '修行記録';
+
+  @override
+  String get streakTitle => '連続修行';
+
+  @override
+  String get currentStreakLabel => '現在';
+
+  @override
+  String get longestStreakLabel => '最長';
+
+  @override
+  String get thisWeekTitle => '今週';
+
+  @override
+  String get thisMonthTitle => '今月';
+
+  @override
+  String get monthlySessionLabel => '修行回数';
+
+  @override
+  String monthlySessionValue(int count) {
+    return '$count回';
+  }
+
+  @override
+  String get monthlyBowLabel => '累計拝数';
+
+  @override
+  String monthlyBowValue(int count) {
+    return '$count拝';
+  }
+
+  @override
+  String get recentSessionsTitle => '最近の修行';
+
+  @override
+  String get emptyHistory => '保存された記録はまだありません';
+}
