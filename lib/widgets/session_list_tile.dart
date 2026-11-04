@@ -64,7 +64,7 @@ class SessionListTile extends StatelessWidget {
                     ),
                     // 보조 글자
                     style: textTheme.bodySmall?.copyWith(
-                      color: AppColors.textSecondary,
+                      color: context.textSecondaryColor,
                     ),
                   ),
                   // 메모가 있으면 보여 준다.
@@ -88,8 +88,8 @@ class SessionListTile extends StatelessWidget {
             Text(
               // "38분 12초"
               formatter.formatDuration(session.activeDuration),
-              // 금빛 글자
-              style: textTheme.titleSmall?.copyWith(color: AppColors.gold),
+              // 버튼색 글자
+              style: textTheme.titleSmall?.copyWith(color: context.accentColor),
             ),
           ],
         ),

@@ -247,4 +247,104 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get emptyHistory => 'No saved records yet';
+
+  @override
+  String get settingsTooltip => 'Settings';
+
+  @override
+  String get settingsTitle => 'Settings';
+
+  @override
+  String get settingsIntervalSection => 'Count interval';
+
+  @override
+  String get settingsIntervalDescription =>
+      'How often one bow is counted in auto interval mode';
+
+  @override
+  String get settingsThemeSection => 'Color theme';
+
+  @override
+  String get themeBlack => 'Black';
+
+  @override
+  String get themeCharcoal => 'Charcoal';
+
+  @override
+  String get themeWarmBrown => 'Warm brown';
+
+  @override
+  String get themeNavy => 'Navy';
+
+  @override
+  String get settingsCalendarSection => 'Calendar';
+
+  @override
+  String get calendarSyncTitle => 'Add records to calendar';
+
+  @override
+  String get calendarSyncDescription =>
+      'Saved records are added as events to the chosen calendar, such as Google Calendar';
+
+  @override
+  String get calendarTargetLabel => 'Calendar';
+
+  @override
+  String get calendarNotSelected => 'Not selected';
+
+  @override
+  String get calendarPickerTitle => 'Choose a calendar';
+
+  @override
+  String get calendarEmpty =>
+      'No writable calendars found. Check that a Google account is added on this device';
+
+  @override
+  String get calendarPermissionDenied =>
+      'Calendar access was denied. Allow calendar access in the device settings';
+
+  @override
+  String get calendarLoadFailed => 'Could not load calendars';
+
+  @override
+  String get calendarEventTitle => '108 bows practice';
+
+  @override
+  String calendarEventDescription(int count, String duration) {
+    return '$count bows · $duration';
+  }
+
+  @override
+  String get recordSavedToCalendar => 'Record saved and added to your calendar';
+
+  @override
+  String get recordSavedCalendarFailed =>
+      'Record saved, but it could not be added to your calendar';
+
+  @override
+  String get themeBackgroundLabel => 'Background';
+
+  @override
+  String get themeAccentLabel => 'Button color';
+
+  @override
+  String get themeDarkGray => 'Dark gray';
+
+  @override
+  String get themeWhite => 'White';
+
+  @override
+  String get themeLightGray => 'Light gray';
+
+  @override
+  String get accentGold => 'Gold';
+
+  @override
+  String get accentBlue => 'Blue';
+
+  @override
+  String get accentDeepBlue => 'Deep blue';
+
+  @override
+  String get accentGray => 'Gray';
 }

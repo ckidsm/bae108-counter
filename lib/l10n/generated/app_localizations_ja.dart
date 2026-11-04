@@ -246,4 +246,101 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get emptyHistory => '保存された記録はまだありません';
+
+  @override
+  String get settingsTooltip => '設定';
+
+  @override
+  String get settingsTitle => '設定';
+
+  @override
+  String get settingsIntervalSection => 'カウント間隔';
+
+  @override
+  String get settingsIntervalDescription => '自動間隔モードで1拝を数える間隔です';
+
+  @override
+  String get settingsThemeSection => 'カラーテーマ';
+
+  @override
+  String get themeBlack => 'ブラック';
+
+  @override
+  String get themeCharcoal => 'チャコール';
+
+  @override
+  String get themeWarmBrown => 'ウォームブラウン';
+
+  @override
+  String get themeNavy => 'ネイビー';
+
+  @override
+  String get settingsCalendarSection => 'カレンダー記録';
+
+  @override
+  String get calendarSyncTitle => '修行記録をカレンダーに追加';
+
+  @override
+  String get calendarSyncDescription =>
+      '記録を保存すると、選択したカレンダー（Googleカレンダーなど）に予定として追加します';
+
+  @override
+  String get calendarTargetLabel => '記録するカレンダー';
+
+  @override
+  String get calendarNotSelected => '未選択';
+
+  @override
+  String get calendarPickerTitle => 'カレンダーを選択';
+
+  @override
+  String get calendarEmpty =>
+      '書き込めるカレンダーがありません。端末にGoogleアカウントが追加されているか確認してください';
+
+  @override
+  String get calendarPermissionDenied => 'カレンダーへのアクセスが許可されていません。端末の設定で許可してください';
+
+  @override
+  String get calendarLoadFailed => 'カレンダーを読み込めませんでした';
+
+  @override
+  String get calendarEventTitle => '108拝 修行';
+
+  @override
+  String calendarEventDescription(int count, String duration) {
+    return '$count拝 · 所要時間 $duration';
+  }
+
+  @override
+  String get recordSavedToCalendar => '記録を保存し、カレンダーに追加しました';
+
+  @override
+  String get recordSavedCalendarFailed => '記録は保存しましたが、カレンダーに追加できませんでした';
+
+  @override
+  String get themeBackgroundLabel => '背景色';
+
+  @override
+  String get themeAccentLabel => 'ボタンの色';
+
+  @override
+  String get themeDarkGray => 'ダークグレー';
+
+  @override
+  String get themeWhite => 'ホワイト';
+
+  @override
+  String get themeLightGray => 'ライトグレー';
+
+  @override
+  String get accentGold => 'ゴールド';
+
+  @override
+  String get accentBlue => 'ブルー';
+
+  @override
+  String get accentDeepBlue => 'ディープブルー';
+
+  @override
+  String get accentGray => 'グレー';
 }

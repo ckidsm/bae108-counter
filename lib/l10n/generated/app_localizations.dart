@@ -509,6 +509,192 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'아직 저장된 기록이 없습니다'**
   String get emptyHistory;
+
+  /// No description provided for @settingsTooltip.
+  ///
+  /// In ko, this message translates to:
+  /// **'설정'**
+  String get settingsTooltip;
+
+  /// No description provided for @settingsTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'설정'**
+  String get settingsTitle;
+
+  /// No description provided for @settingsIntervalSection.
+  ///
+  /// In ko, this message translates to:
+  /// **'카운트 간격'**
+  String get settingsIntervalSection;
+
+  /// No description provided for @settingsIntervalDescription.
+  ///
+  /// In ko, this message translates to:
+  /// **'자동 간격 방식에서 1배를 세는 간격입니다'**
+  String get settingsIntervalDescription;
+
+  /// No description provided for @settingsThemeSection.
+  ///
+  /// In ko, this message translates to:
+  /// **'색상 테마'**
+  String get settingsThemeSection;
+
+  /// No description provided for @themeBlack.
+  ///
+  /// In ko, this message translates to:
+  /// **'검정'**
+  String get themeBlack;
+
+  /// No description provided for @themeCharcoal.
+  ///
+  /// In ko, this message translates to:
+  /// **'차콜'**
+  String get themeCharcoal;
+
+  /// No description provided for @themeWarmBrown.
+  ///
+  /// In ko, this message translates to:
+  /// **'웜 브라운'**
+  String get themeWarmBrown;
+
+  /// No description provided for @themeNavy.
+  ///
+  /// In ko, this message translates to:
+  /// **'네이비'**
+  String get themeNavy;
+
+  /// No description provided for @settingsCalendarSection.
+  ///
+  /// In ko, this message translates to:
+  /// **'캘린더 기록'**
+  String get settingsCalendarSection;
+
+  /// No description provided for @calendarSyncTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'수행 기록을 캘린더에 추가'**
+  String get calendarSyncTitle;
+
+  /// No description provided for @calendarSyncDescription.
+  ///
+  /// In ko, this message translates to:
+  /// **'기록을 저장하면 선택한 캘린더(Google 캘린더 등)에 일정으로 추가합니다'**
+  String get calendarSyncDescription;
+
+  /// No description provided for @calendarTargetLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'기록할 캘린더'**
+  String get calendarTargetLabel;
+
+  /// No description provided for @calendarNotSelected.
+  ///
+  /// In ko, this message translates to:
+  /// **'선택 안 됨'**
+  String get calendarNotSelected;
+
+  /// No description provided for @calendarPickerTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'캘린더 선택'**
+  String get calendarPickerTitle;
+
+  /// No description provided for @calendarEmpty.
+  ///
+  /// In ko, this message translates to:
+  /// **'쓸 수 있는 캘린더가 없습니다. 기기에 Google 계정이 추가되어 있는지 확인해 주세요'**
+  String get calendarEmpty;
+
+  /// No description provided for @calendarPermissionDenied.
+  ///
+  /// In ko, this message translates to:
+  /// **'캘린더 권한이 없습니다. 기기 설정에서 캘린더 접근을 허용해 주세요'**
+  String get calendarPermissionDenied;
+
+  /// No description provided for @calendarLoadFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'캘린더 목록을 불러오지 못했습니다'**
+  String get calendarLoadFailed;
+
+  /// No description provided for @calendarEventTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'108배 수행'**
+  String get calendarEventTitle;
+
+  /// No description provided for @calendarEventDescription.
+  ///
+  /// In ko, this message translates to:
+  /// **'{count}배 · 소요 시간 {duration}'**
+  String calendarEventDescription(int count, String duration);
+
+  /// No description provided for @recordSavedToCalendar.
+  ///
+  /// In ko, this message translates to:
+  /// **'기록을 저장하고 캘린더에 추가했습니다'**
+  String get recordSavedToCalendar;
+
+  /// No description provided for @recordSavedCalendarFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'기록은 저장했지만 캘린더에 추가하지 못했습니다'**
+  String get recordSavedCalendarFailed;
+
+  /// No description provided for @themeBackgroundLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'배경색'**
+  String get themeBackgroundLabel;
+
+  /// No description provided for @themeAccentLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'버튼색'**
+  String get themeAccentLabel;
+
+  /// No description provided for @themeDarkGray.
+  ///
+  /// In ko, this message translates to:
+  /// **'다크 그레이'**
+  String get themeDarkGray;
+
+  /// No description provided for @themeWhite.
+  ///
+  /// In ko, this message translates to:
+  /// **'화이트'**
+  String get themeWhite;
+
+  /// No description provided for @themeLightGray.
+  ///
+  /// In ko, this message translates to:
+  /// **'라이트 그레이'**
+  String get themeLightGray;
+
+  /// No description provided for @accentGold.
+  ///
+  /// In ko, this message translates to:
+  /// **'금빛'**
+  String get accentGold;
+
+  /// No description provided for @accentBlue.
+  ///
+  /// In ko, this message translates to:
+  /// **'블루'**
+  String get accentBlue;
+
+  /// No description provided for @accentDeepBlue.
+  ///
+  /// In ko, this message translates to:
+  /// **'딥 블루'**
+  String get accentDeepBlue;
+
+  /// No description provided for @accentGray.
+  ///
+  /// In ko, this message translates to:
+  /// **'그레이'**
+  String get accentGray;
 }
 
 class _AppLocalizationsDelegate

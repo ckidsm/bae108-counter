@@ -2,12 +2,14 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import '../controllers/app_settings_controller.dart';
 import '../controllers/counter_controller.dart';
 import '../controllers/counter_rules.dart';
 import '../l10n/generated/app_localizations.dart';
 import '../models/count_mode.dart';
 import '../models/counter_phase.dart';
 import '../services/bow_feedback_service.dart';
+import '../services/calendar_sync_service.dart';
 import '../services/practice_record_repository.dart';
 import '../services/wake_lock_service.dart';
 import '../theme/app_colors.dart';
@@ -22,6 +24,7 @@ import '../widgets/section_label.dart';
 import '../widgets/segment_progress_bars.dart';
 import 'completion_screen.dart';
 import 'history_screen.dart';
+import 'settings_screen.dart';
 
 /*────────────────────────────────────────────────────────────────────────
  Purpose  : Shows the counter, its options, and the controls of today's practice.
@@ -37,6 +40,8 @@ class MainScreen extends StatefulWidget {
     required this.repository,
     required this.feedbackService,
     required this.wakeLockService,
+    required this.appSettingsController,
+    required this.calendarSyncService,
   });
 
   /// Stores practice records and settings.
@@ -47,6 +52,12 @@ class MainScreen extends StatefulWidget {
 
   /// Keeps the screen on during a practice.
   final WakeLockService wakeLockService;
+
+  /// Holds the theme and calendar settings.
+  final AppSettingsController appSettingsController;
+
+  /// Adds saved records to the device calendar.
+  final CalendarSyncService calendarSyncService;
 
   @override
   State<MainScreen> createState() => _MainScreenState();
@@ -204,6 +215,15 @@ class _MainScreenState extends State<MainScreen> {
           // 누르면 기록 화면을 연다.
           onPressed: _openHistory,
         ),
+        // 설정 화면 버튼(달력 오른쪽)
+        IconButton(
+          // 설명
+          tooltip: localizations.settingsTooltip,
+          // 톱니바퀴 아이콘
+          icon: const Icon(Icons.settings_outlined),
+          // 누르면 설정 화면을 연다.
+          onPressed: _openSettings,
+        ),
       ],
     );
   }
@@ -232,10 +252,10 @@ class _MainScreenState extends State<MainScreen> {
         Row(
           children: <Widget>[
             // 해 아이콘
-            const Icon(
+            Icon(
               Icons.light_mode_outlined,
               size: _noticeIconSize,
-              color: AppColors.gold,
+              color: context.accentColor,
             ),
             // 간격
             const SizedBox(width: _smallSpacing / 2),
@@ -245,8 +265,10 @@ class _MainScreenState extends State<MainScreen> {
               child: Text(
                 // 문구
                 localizations.keepScreenOnNotice,
-                // 금빛 작은 글자
-                style: textTheme.bodySmall?.copyWith(color: AppColors.gold),
+                // 버튼색 작은 글자
+                style: textTheme.bodySmall?.copyWith(
+                  color: context.accentColor,
+                ),
               ),
             ),
           ],
@@ -285,8 +307,7 @@ class _MainScreenState extends State<MainScreen> {
             // 현재 간격
             intervalSeconds: _controller.intervalSeconds,
             // 바꾸면 저장한다.
-            onChanged: (seconds) =>
-                _updateSettings(() => _controller.setIntervalSeconds(seconds)),
+            onChanged: _changeIntervalSeconds,
           ),
         ],
       ],
@@ -386,6 +407,10 @@ class _MainScreenState extends State<MainScreen> {
           session: session,
           // 저장소
           repository: widget.repository,
+          // 캘린더 기록 설정
+          appSettings: widget.appSettingsController.settings,
+          // 캘린더 서비스
+          calendarSyncService: widget.calendarSyncService,
         ),
       ),
     );
@@ -398,14 +423,62 @@ class _MainScreenState extends State<MainScreen> {
     }
     // 저장했거나 한 번 더 하기를 골랐으면 처음부터 시작할 수 있게 초기화한다.
     _controller.reset();
+    // 결과에 맞는 저장 안내 문구(다시 시작이면 없음)
+    final savedMessage = _savedMessageOf(AppLocalizations.of(context), outcome);
     // 저장한 경우 알림을 띄운다.
-    if (outcome == CompletionOutcome.saved) {
+    if (savedMessage != null) {
       // 하단 안내
-      ScaffoldMessenger.of(context).showSnackBar(
-        // "기록을 저장했습니다"
-        SnackBar(content: Text(AppLocalizations.of(context).recordSaved)),
-      );
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(savedMessage)));
     }
+  }
+
+  // 회향 화면 결과별 안내 문구
+  String? _savedMessageOf(
+    AppLocalizations localizations,
+    CompletionOutcome outcome,
+  ) {
+    // 결과에 따라 문구를 고른다.
+    return switch (outcome) {
+      // 기록만 저장
+      CompletionOutcome.saved => localizations.recordSaved,
+      // 기록 저장 + 캘린더 추가
+      CompletionOutcome.savedToCalendar => localizations.recordSavedToCalendar,
+      // 기록은 저장, 캘린더 실패
+      CompletionOutcome.savedCalendarFailed =>
+        localizations.recordSavedCalendarFailed,
+      // 다시 시작(안내 없음)
+      CompletionOutcome.restarted => null,
+    };
+  }
+
+  // 간격을 바꾸고 저장한다(간격 칩과 설정 화면이 함께 쓴다).
+  void _changeIntervalSeconds(int seconds) {
+    // 간격을 바꾸고 설정을 저장한다.
+    _updateSettings(() => _controller.setIntervalSeconds(seconds));
+  }
+
+  // 설정 화면을 연다.
+  void _openSettings() {
+    // 설정 화면으로 이동한다.
+    unawaited(
+      Navigator.of(context).push<void>(
+        // 화면 전환
+        MaterialPageRoute<void>(
+          // 설정 화면
+          builder: (_) => SettingsScreen(
+            // 카운터(간격 표시용)
+            counterController: _controller,
+            // 간격 변경·저장
+            onIntervalChanged: _changeIntervalSeconds,
+            // 테마·캘린더 설정
+            appSettingsController: widget.appSettingsController,
+            // 캘린더 서비스
+            calendarSyncService: widget.calendarSyncService,
+          ),
+        ),
+      ),
+    );
   }
 
   // 처음부터: 센 절이 있으면 확인 후 초기화한다.

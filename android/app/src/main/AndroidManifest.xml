@@ -1,6 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- 1배마다 진동 알림을 보내기 위한 권한 -->
     <uses-permission android:name="android.permission.VIBRATE" />
+    <!-- 수행 기록을 기기 캘린더(Google 계정 캘린더 포함)에 추가하기 위한 권한 -->
+    <uses-permission android:name="android.permission.READ_CALENDAR" />
+    <uses-permission android:name="android.permission.WRITE_CALENDAR" />
     <application
         android:label="@string/app_name"
         android:name="${applicationName}"

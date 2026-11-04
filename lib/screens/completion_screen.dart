@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../l10n/generated/app_localizations.dart';
+import '../models/app_settings.dart';
 import '../models/bow_session.dart';
+import '../services/calendar_sync_service.dart';
 import '../services/practice_record_repository.dart';
 import '../services/practice_statistics_calculator.dart';
 import '../theme/app_colors.dart';
@@ -14,9 +16,17 @@ import '../widgets/stat_tile.dart';
 ────────────────────────────────────────────────────────────────────────*/
 /// 회향 화면을 닫은 방법.
 enum CompletionOutcome {
-  // 기록을 저장하고 닫았다.
-  /// The record was saved.
+  // 기록을 저장하고 닫았다(캘린더 기록은 꺼져 있음).
+  /// The record was saved; calendar recording is off.
   saved,
+
+  // 기록을 저장하고 캘린더에도 추가했다.
+  /// The record was saved and added to the calendar.
+  savedToCalendar,
+
+  // 기록은 저장했지만 캘린더 추가에 실패했다.
+  /// The record was saved, but adding it to the calendar failed.
+  savedCalendarFailed,
 
   // 저장하지 않고 다시 시작하기로 했다.
   /// The user chose to practice again without saving.
@@ -34,6 +44,8 @@ class CompletionScreen extends StatefulWidget {
     super.key,
     required this.session,
     required this.repository,
+    required this.appSettings,
+    required this.calendarSyncService,
   });
 
   /// The completed practice, without a memo yet.
@@ -41,6 +53,12 @@ class CompletionScreen extends StatefulWidget {
 
   /// Stores the record when the user saves it.
   final PracticeRecordRepository repository;
+
+  /// Decides whether the saved record is also added to a calendar.
+  final AppSettings appSettings;
+
+  /// Adds the saved record to the device calendar.
+  final CalendarSyncService calendarSyncService;
 
   @override
   State<CompletionScreen> createState() => _CompletionScreenState();
@@ -123,7 +141,7 @@ class _CompletionScreenState extends State<CompletionScreen> {
                 localizations.completionSubtitle,
                 // 보조 글자
                 style: textTheme.bodyMedium?.copyWith(
-                  color: AppColors.textSecondary,
+                  color: context.textSecondaryColor,
                 ),
               ),
               // 간격
@@ -151,7 +169,7 @@ class _CompletionScreenState extends State<CompletionScreen> {
                   // 바탕 채움
                   filled: true,
                   // 카드 색 바탕
-                  fillColor: AppColors.card,
+                  fillColor: Theme.of(context).colorScheme.surfaceContainer,
                   // 테두리
                   border: const OutlineInputBorder(),
                 ),
@@ -189,7 +207,7 @@ class _CompletionScreenState extends State<CompletionScreen> {
     );
   }
 
-  // 금빛 원 안의 연꽃 아이콘
+  // 버튼색 원 안의 연꽃 아이콘
   Widget _buildLotus() {
     // 원형 배경
     return Container(
@@ -197,15 +215,15 @@ class _CompletionScreenState extends State<CompletionScreen> {
       width: _lotusDiameter,
       // 지름
       height: _lotusDiameter,
-      // 원 모양 금빛 반투명 배경
+      // 원 모양 반투명 버튼색 배경
       decoration: BoxDecoration(
         // 원
         shape: BoxShape.circle,
-        // 반투명 금빛
-        color: AppColors.gold.withValues(alpha: _lotusBackgroundAlpha),
+        // 반투명 버튼색
+        color: context.accentColor.withValues(alpha: _lotusBackgroundAlpha),
       ),
       // 연꽃(spa) 아이콘
-      child: const Icon(Icons.spa, size: _lotusIconSize, color: AppColors.gold),
+      child: Icon(Icons.spa, size: _lotusIconSize, color: context.accentColor),
     );
   }
 
@@ -234,25 +252,34 @@ class _CompletionScreenState extends State<CompletionScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
                 // 소요 시간
-                StatTile(
-                  // "소요 시간"
-                  label: localizations.completionDuration,
-                  // "38분 12초"
-                  value: formatter.formatDuration(session.activeDuration),
+                // 칸이 같은 폭을 나눠 쓴다.
+                Expanded(
+                  child: StatTile(
+                    // "소요 시간"
+                    label: localizations.completionDuration,
+                    // "38분 12초"
+                    value: formatter.formatDuration(session.activeDuration),
+                  ),
                 ),
                 // 1배 평균
-                StatTile(
-                  // "1배 평균"
-                  label: localizations.completionAverage,
-                  // "21.2초"
-                  value: formatter.formatAverageSeconds(averageDuration),
+                // 칸이 같은 폭을 나눠 쓴다.
+                Expanded(
+                  child: StatTile(
+                    // "1배 평균"
+                    label: localizations.completionAverage,
+                    // "21.2초"
+                    value: formatter.formatAverageSeconds(averageDuration),
+                  ),
                 ),
                 // 연속 일수
-                StatTile(
-                  // "연속 일수"
-                  label: localizations.completionStreak,
-                  // "3일"
-                  value: localizations.streakDaysValue(_streakDays),
+                // 칸이 같은 폭을 나눠 쓴다.
+                Expanded(
+                  child: StatTile(
+                    // "연속 일수"
+                    label: localizations.completionStreak,
+                    // "3일"
+                    value: localizations.streakDaysValue(_streakDays),
+                  ),
                 ),
               ],
             ),
@@ -262,9 +289,9 @@ class _CompletionScreenState extends State<CompletionScreen> {
             Text(
               // "14:02 → 14:40"
               formatter.formatTimeRange(session.startedAt, session.endedAt),
-              // 금빛 글자
+              // 버튼색 글자
               style: Theme.of(context).textTheme.titleMedium
-                  ?.copyWith(color: AppColors.gold),
+                  ?.copyWith(color: context.accentColor),
             ),
           ],
         ),
@@ -307,12 +334,12 @@ class _CompletionScreenState extends State<CompletionScreen> {
   Future<void> _saveRecord() async {
     // 저장 중으로 표시한다.
     setState(() => _isSaving = true);
-    // 앞뒤 공백을 지운 메모
-    final memo = _memoController.text.trim();
+    // 앞뒤 공백을 지운 메모를 붙인 기록
+    final session = widget.session.copyWithMemo(_memoController.text.trim());
     // 저장은 실패할 수 있다.
     try {
-      // 메모를 붙여 저장한다.
-      await widget.repository.addSession(widget.session.copyWithMemo(memo));
+      // 기록을 저장한다.
+      await widget.repository.addSession(session);
     } on StateError catch (error) {
       // 실패 원인을 남긴다.
       debugPrint('[CompletionScreen] 기록 저장 실패: $error');
@@ -331,13 +358,70 @@ class _CompletionScreenState extends State<CompletionScreen> {
       // 화면은 닫지 않는다.
       return;
     }
+    // 캘린더 기록이 켜져 있으면 일정도 추가한다.
+    final outcome = await _writeToCalendarIfEnabled(session);
     // 화면이 사라졌으면 끝낸다.
     if (!mounted) {
       // 처리 끝
       return;
     }
-    // 저장했음을 알리며 닫는다.
-    Navigator.of(context).pop(CompletionOutcome.saved);
+    // 저장 결과를 알리며 닫는다.
+    Navigator.of(context).pop(outcome);
+  }
+
+  // 캘린더 기록이 켜져 있으면 일정을 추가하고 결과를 돌려준다.
+  Future<CompletionOutcome> _writeToCalendarIfEnabled(
+    BowSession session,
+  ) async {
+    // 기록할 캘린더
+    final calendarTarget = widget.appSettings.calendarTarget;
+    // 꺼져 있거나 캘린더가 없으면 기록만 저장한 것으로 끝낸다.
+    if (!widget.appSettings.isCalendarSyncEnabled || calendarTarget == null) {
+      // 기록만 저장
+      return CompletionOutcome.saved;
+    }
+    // 일정에 넣을 번역 문구를 만든다.
+    final eventText = _buildEventText(session);
+    // 캘린더 추가는 권한·플랫폼 문제로 실패할 수 있다.
+    try {
+      // 일정을 추가한다.
+      await widget.calendarSyncService.addPracticeEvent(
+        session,
+        calendarTarget,
+        eventText,
+      );
+      // 캘린더까지 성공
+      return CompletionOutcome.savedToCalendar;
+    } on CalendarSyncException catch (error) {
+      // 기록은 이미 저장했으므로 원인만 남기고 실패 결과를 돌려준다.
+      debugPrint('[CompletionScreen] 캘린더 일정 추가 실패: $error');
+      // 캘린더 실패
+      return CompletionOutcome.savedCalendarFailed;
+    }
+  }
+
+  // 캘린더 일정 제목과 설명(절 수·소요 시간·메모)을 만든다.
+  CalendarEventText _buildEventText(BowSession session) {
+    // 번역 문구
+    final localizations = AppLocalizations.of(context);
+    // 시간 문구 형식 도우미
+    final formatter = DisplayFormatter(localizations);
+    // "108배 · 소요 시간 38분 12초"
+    final summary = localizations.calendarEventDescription(
+      session.bowCount,
+      formatter.formatDuration(session.activeDuration),
+    );
+    // 메모가 있으면 다음 줄에 붙인다.
+    final description = session.memo.isEmpty
+        ? summary
+        : '$summary\n${session.memo}';
+    // 제목과 설명
+    return CalendarEventText(
+      // "108배 수행"
+      title: localizations.calendarEventTitle,
+      // 설명
+      description: description,
+    );
   }
 
   // 저장하지 않고 다시 시작할지 확인한다.

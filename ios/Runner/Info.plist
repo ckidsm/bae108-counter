@@ -6,6 +6,14 @@
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>NSCalendarsUsageDescription</key>
+	<string>108배 수행 기록을 캘린더에 일정으로 추가합니다. (Adds your 108-bow practice records to your calendar.)</string>
+	<key>NSCalendarsFullAccessUsageDescription</key>
+	<string>108배 수행 기록을 캘린더에 일정으로 추가합니다. (Adds your 108-bow practice records to your calendar.)</string>
+	<key>NSCalendarsWriteOnlyAccessUsageDescription</key>
+	<string>108배 수행 기록을 캘린더에 일정으로 추가합니다. (Adds your 108-bow practice records to your calendar.)</string>
+	<key>NSContactsUsageDescription</key>
+	<string>캘린더 플러그인이 요구하는 항목이며, 앱은 연락처를 읽지 않습니다. (Required by the calendar plugin; the app does not read contacts.)</string>
 	<key>CFBundleLocalizations</key>
 	<array>
 		<string>en</string>

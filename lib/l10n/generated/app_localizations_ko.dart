@@ -246,4 +246,102 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get emptyHistory => '아직 저장된 기록이 없습니다';
+
+  @override
+  String get settingsTooltip => '설정';
+
+  @override
+  String get settingsTitle => '설정';
+
+  @override
+  String get settingsIntervalSection => '카운트 간격';
+
+  @override
+  String get settingsIntervalDescription => '자동 간격 방식에서 1배를 세는 간격입니다';
+
+  @override
+  String get settingsThemeSection => '색상 테마';
+
+  @override
+  String get themeBlack => '검정';
+
+  @override
+  String get themeCharcoal => '차콜';
+
+  @override
+  String get themeWarmBrown => '웜 브라운';
+
+  @override
+  String get themeNavy => '네이비';
+
+  @override
+  String get settingsCalendarSection => '캘린더 기록';
+
+  @override
+  String get calendarSyncTitle => '수행 기록을 캘린더에 추가';
+
+  @override
+  String get calendarSyncDescription =>
+      '기록을 저장하면 선택한 캘린더(Google 캘린더 등)에 일정으로 추가합니다';
+
+  @override
+  String get calendarTargetLabel => '기록할 캘린더';
+
+  @override
+  String get calendarNotSelected => '선택 안 됨';
+
+  @override
+  String get calendarPickerTitle => '캘린더 선택';
+
+  @override
+  String get calendarEmpty =>
+      '쓸 수 있는 캘린더가 없습니다. 기기에 Google 계정이 추가되어 있는지 확인해 주세요';
+
+  @override
+  String get calendarPermissionDenied =>
+      '캘린더 권한이 없습니다. 기기 설정에서 캘린더 접근을 허용해 주세요';
+
+  @override
+  String get calendarLoadFailed => '캘린더 목록을 불러오지 못했습니다';
+
+  @override
+  String get calendarEventTitle => '108배 수행';
+
+  @override
+  String calendarEventDescription(int count, String duration) {
+    return '$count배 · 소요 시간 $duration';
+  }
+
+  @override
+  String get recordSavedToCalendar => '기록을 저장하고 캘린더에 추가했습니다';
+
+  @override
+  String get recordSavedCalendarFailed => '기록은 저장했지만 캘린더에 추가하지 못했습니다';
+
+  @override
+  String get themeBackgroundLabel => '배경색';
+
+  @override
+  String get themeAccentLabel => '버튼색';
+
+  @override
+  String get themeDarkGray => '다크 그레이';
+
+  @override
+  String get themeWhite => '화이트';
+
+  @override
+  String get themeLightGray => '라이트 그레이';
+
+  @override
+  String get accentGold => '금빛';
+
+  @override
+  String get accentBlue => '블루';
+
+  @override
+  String get accentDeepBlue => '딥 블루';
+
+  @override
+  String get accentGray => '그레이';
 }

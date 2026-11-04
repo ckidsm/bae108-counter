@@ -110,18 +110,28 @@ class HistoryScreen extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
           // 현재 연속
-          StatTile(
-            // "현재"
-            label: localizations.currentStreakLabel,
-            // "N일"
-            value: localizations.streakDaysValue(statistics.currentStreakDays),
+          // 칸이 같은 폭을 나눠 쓴다.
+          Expanded(
+            child: StatTile(
+              // "현재"
+              label: localizations.currentStreakLabel,
+              // "N일"
+              value: localizations.streakDaysValue(
+                statistics.currentStreakDays,
+              ),
+            ),
           ),
           // 최장 연속
-          StatTile(
-            // "최장"
-            label: localizations.longestStreakLabel,
-            // "N일"
-            value: localizations.streakDaysValue(statistics.longestStreakDays),
+          // 칸이 같은 폭을 나눠 쓴다.
+          Expanded(
+            child: StatTile(
+              // "최장"
+              label: localizations.longestStreakLabel,
+              // "N일"
+              value: localizations.streakDaysValue(
+                statistics.longestStreakDays,
+              ),
+            ),
           ),
         ],
       ),
@@ -145,20 +155,26 @@ class HistoryScreen extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
           // 수행 횟수
-          StatTile(
-            // "수행 횟수"
-            label: localizations.monthlySessionLabel,
-            // "N회"
-            value: localizations.monthlySessionValue(
-              statistics.monthlySessionCount,
+          // 칸이 같은 폭을 나눠 쓴다.
+          Expanded(
+            child: StatTile(
+              // "수행 횟수"
+              label: localizations.monthlySessionLabel,
+              // "N회"
+              value: localizations.monthlySessionValue(
+                statistics.monthlySessionCount,
+              ),
             ),
           ),
           // 누적 절 수
-          StatTile(
-            // "누적 절 수"
-            label: localizations.monthlyBowLabel,
-            // "N절"
-            value: localizations.monthlyBowValue(statistics.monthlyBowCount),
+          // 칸이 같은 폭을 나눠 쓴다.
+          Expanded(
+            child: StatTile(
+              // "누적 절 수"
+              label: localizations.monthlyBowLabel,
+              // "N절"
+              value: localizations.monthlyBowValue(statistics.monthlyBowCount),
+            ),
           ),
         ],
       ),
@@ -187,7 +203,7 @@ class HistoryScreen extends StatelessWidget {
               localizations.emptyHistory,
               // 보조 글자
               style: Theme.of(context).textTheme.bodyMedium
-                  ?.copyWith(color: AppColors.textSecondary),
+                  ?.copyWith(color: context.textSecondaryColor),
             ),
           ),
         ),
@@ -230,7 +246,7 @@ class HistoryScreen extends StatelessWidget {
               title,
               // 보조 글자
               style: Theme.of(context).textTheme.labelLarge
-                  ?.copyWith(color: AppColors.textSecondary),
+                  ?.copyWith(color: context.textSecondaryColor),
             ),
             // 간격
             const SizedBox(height: _titleSpacing),

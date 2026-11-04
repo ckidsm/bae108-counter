@@ -77,7 +77,7 @@ class WeekCheckRow extends StatelessWidget {
           weekdayLabel,
           // 보조 글자
           style: Theme.of(context).textTheme.labelMedium
-              ?.copyWith(color: AppColors.textSecondary),
+              ?.copyWith(color: context.textSecondaryColor),
         ),
         // 간격
         const SizedBox(height: _labelSpacing),
@@ -91,19 +91,24 @@ class WeekCheckRow extends StatelessWidget {
           decoration: BoxDecoration(
             // 원 모양
             shape: BoxShape.circle,
-            // 수행한 날은 금빛, 아니면 바탕색
-            color: isCompleted ? AppColors.gold : AppColors.track,
-            // 오늘은 금빛 테두리
+            // 수행한 날은 버튼색, 아니면 테마의 바탕 면 색
+            color: isCompleted
+                ? context.accentColor
+                : Theme.of(context).colorScheme.surfaceContainerHighest,
+            // 오늘은 버튼색 테두리
             border: isToday
-                ? Border.all(color: AppColors.gold, width: _todayBorderWidth)
+                ? Border.all(
+                    color: context.accentColor,
+                    width: _todayBorderWidth,
+                  )
                 : null,
           ),
           // 수행한 날은 체크 표시
           child: isCompleted
-              ? const Icon(
+              ? Icon(
                   Icons.check,
                   size: _checkIconSize,
-                  color: AppColors.onGold,
+                  color: context.onAccentColor,
                 )
               : null,
         ),
