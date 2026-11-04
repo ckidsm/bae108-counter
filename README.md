@@ -96,7 +96,7 @@ The app starts in `lib/main.dart`. (`lib/main.dart`)
 
 ### Requirements
 
-- Flutter stable with Dart SDK `^3.13.7` (developed with Flutter 3.47.9). (`pubspec.yaml`)
+- Flutter 3.44.0 or later with Dart SDK `^3.13.0` (developed with Flutter 3.47.9). (`pubspec.yaml`, `pubspec.lock`)
 - Android: Android SDK; `minSdk` follows the Flutter default. (`android/app/build.gradle.kts`)
 - iOS: macOS with Xcode and CocoaPods; deployment target iOS 15.0. (`ios/Runner.xcodeproj/project.pbxproj`)
 
