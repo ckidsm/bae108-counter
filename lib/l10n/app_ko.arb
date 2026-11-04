@@ -1,0 +1,162 @@
+{
+  "@@locale": "ko",
+  "appTitle": "108배 카운터",
+  "mainTitle": "오늘의 108배",
+  "keepScreenOnNotice": "108배까지 화면 켜짐 유지",
+  "historyTooltip": "수행 기록",
+  "countModeTitle": "카운트 방식",
+  "countModeTap": "직접 탭",
+  "countModeAuto": "자동 간격",
+  "intervalTitle": "절 간격",
+  "intervalCustom": "직접 설정",
+  "intervalCustomSelected": "직접 · {duration}",
+  "@intervalCustomSelected": {
+    "placeholders": {
+      "duration": { "type": "String" }
+    }
+  },
+  "customIntervalSheetTitle": "절 간격 직접 설정",
+  "customIntervalRange": "{minimum} ~ {maximum}, {step} 단위",
+  "@customIntervalRange": {
+    "placeholders": {
+      "minimum": { "type": "String" },
+      "maximum": { "type": "String" },
+      "step": { "type": "String" }
+    }
+  },
+  "customIntervalApply": "적용",
+  "durationSeconds": "{seconds}초",
+  "@durationSeconds": {
+    "placeholders": {
+      "seconds": { "type": "int" }
+    }
+  },
+  "durationMinutes": "{minutes}분",
+  "@durationMinutes": {
+    "placeholders": {
+      "minutes": { "type": "int" }
+    }
+  },
+  "durationMinutesSeconds": "{minutes}분 {seconds}초",
+  "@durationMinutesSeconds": {
+    "placeholders": {
+      "minutes": { "type": "int" },
+      "seconds": { "type": "int" }
+    }
+  },
+  "durationHoursMinutes": "{hours}시간 {minutes}분",
+  "@durationHoursMinutes": {
+    "placeholders": {
+      "hours": { "type": "int" },
+      "minutes": { "type": "int" }
+    }
+  },
+  "counterTarget": "/ {target}",
+  "@counterTarget": {
+    "placeholders": {
+      "target": { "type": "int" }
+    }
+  },
+  "preparationLabel": "준비",
+  "segmentRange": "{start}–{end}",
+  "@segmentRange": {
+    "placeholders": {
+      "start": { "type": "int" },
+      "end": { "type": "int" }
+    }
+  },
+  "guideIdleTap": "원을 탭하거나 시작을 누르세요",
+  "guideIdleAuto": "시작하면 {seconds}초 준비 후 셈을 시작합니다",
+  "@guideIdleAuto": {
+    "placeholders": {
+      "seconds": { "type": "int" }
+    }
+  },
+  "guidePreparing": "자세를 갖추세요 · {seconds}초 후 시작",
+  "@guidePreparing": {
+    "placeholders": {
+      "seconds": { "type": "int" }
+    }
+  },
+  "guideRunningTap": "원을 탭할 때마다 1배씩 셉니다",
+  "guideRunningAuto": "다음 절까지 {seconds}초",
+  "@guideRunningAuto": {
+    "placeholders": {
+      "seconds": { "type": "int" }
+    }
+  },
+  "guidePaused": "일시정지 중 · 이어서를 누르세요",
+  "guideCompleted": "108배를 모두 마쳤습니다",
+  "alertModeTitle": "알림 방식",
+  "alertModeBell": "종소리",
+  "alertModeVibration": "진동",
+  "alertModeSilent": "무음",
+  "buttonStart": "시작",
+  "buttonResume": "이어서",
+  "buttonPause": "일시정지",
+  "buttonDedication": "회향하기",
+  "buttonReset": "처음부터",
+  "resetConfirmTitle": "처음부터 다시 할까요?",
+  "resetConfirmMessage": "지금까지 센 {count}배가 사라집니다.",
+  "@resetConfirmMessage": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "dialogCancel": "취소",
+  "dialogConfirm": "확인",
+  "completionTitle": "108배 회향",
+  "completionSubtitle": "오늘의 정진을 모두에게 회향합니다",
+  "completionDuration": "소요 시간",
+  "completionAverage": "1배 평균",
+  "completionStreak": "연속 일수",
+  "averageSecondsValue": "{seconds}초",
+  "@averageSecondsValue": {
+    "placeholders": {
+      "seconds": { "type": "String" }
+    }
+  },
+  "streakDaysValue": "{days}일",
+  "@streakDaysValue": {
+    "placeholders": {
+      "days": { "type": "int" }
+    }
+  },
+  "timeRange": "{start} → {end}",
+  "@timeRange": {
+    "placeholders": {
+      "start": { "type": "String" },
+      "end": { "type": "String" }
+    }
+  },
+  "memoHint": "오늘의 한 줄 메모",
+  "saveRecord": "기록 저장",
+  "restartPractice": "한 번 더 하기",
+  "discardConfirmTitle": "기록을 저장하지 않을까요?",
+  "discardConfirmMessage": "저장하지 않고 다시 시작하면 이번 수행은 기록에 남지 않습니다.",
+  "discardConfirmAction": "저장 안 함",
+  "recordSaved": "기록을 저장했습니다",
+  "recordSaveFailed": "기록을 저장하지 못했습니다. 다시 시도해 주세요",
+  "historyTitle": "수행 기록",
+  "streakTitle": "연속 수행",
+  "currentStreakLabel": "현재",
+  "longestStreakLabel": "최장",
+  "thisWeekTitle": "이번 주",
+  "thisMonthTitle": "이번 달",
+  "monthlySessionLabel": "수행 횟수",
+  "monthlySessionValue": "{count}회",
+  "@monthlySessionValue": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "monthlyBowLabel": "누적 절 수",
+  "monthlyBowValue": "{count}절",
+  "@monthlyBowValue": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "recentSessionsTitle": "최근 수행",
+  "emptyHistory": "아직 저장된 기록이 없습니다"
+}
