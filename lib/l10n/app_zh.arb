@@ -97,5 +97,6 @@
   "soundTempleBell": "梵钟",
   "summaryIntervalLabel": "间隔",
   "summaryAlertLabel": "提醒",
-  "summaryBellValue": "{mode} · {sound}"
+  "summaryBellValue": "{mode} · {sound}",
+  "guideFinalBow": "最后一拜 · {seconds}秒后完成"
 }

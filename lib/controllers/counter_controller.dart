@@ -15,9 +15,12 @@ import 'counter_rules.dart';
 
 /*────────────────────────────────────────────────────────────────────────
  Purpose  : Counts 108 bows automatically at a set interval after a preparation countdown.
- Remarks  : Time only advances through tick(), so tests can disable the internal
-            timer and call tick() directly with a chosen elapsed duration.
+ Remarks  : Each bow starts with its sound: bow 1 sounds when the countdown ends,
+            each following bow one interval later, and a long sound marks
+            completion one interval after bow 108 started. Time only advances
+            through tick(), so tests can call tick() directly.
  Author   : YUNDEOKSOO                          Created : 2026-11-04
+ History  : [2026-11-05, YUNDEOKSOO] Sound now starts each bow instead of ending it
 ────────────────────────────────────────────────────────────────────────*/
 /// 시작하면 준비 카운트다운 뒤 설정한 초 간격으로 108배를 자동으로 세는 컨트롤러.
 class CounterController extends ChangeNotifier {
@@ -379,25 +382,33 @@ class CounterController extends ChangeNotifier {
     }
     // 준비 시간을 넘긴 만큼은 수행 시간으로 넘긴다.
     final overflow = _preparationElapsed - _preparationDuration;
-    // 세는 단계로 들어간다(첫 절은 간격이 지난 뒤 1배로 센다).
+    // 세는 단계로 들어간다.
     _enterRunning();
+    // 준비가 끝나는 순간 소리와 함께 첫 절(1배)을 시작한다.
+    _startNextBow();
     // 넘친 시간을 수행 시간과 간격에 반영한다.
     _advanceRunning(overflow);
   }
 
-  // 수행 시간을 늘리고, 간격이 지날 때마다 1배를 센다.
+  // 수행 시간을 늘리고, 간격이 지날 때마다 다음 절을 시작한다(108배째 간격이 끝나면 완료).
   void _advanceRunning(Duration elapsed) {
     // 실제 수행 시간을 늘린다.
     _activeElapsed += elapsed;
     // 간격 시간에 흐른 시간을 더한다.
     _intervalElapsed += elapsed;
-    // 간격이 지날 때마다 1배를 센다(긴 지연 시 여러 배를 놓치지 않도록 반복).
+    // 간격이 지날 때마다 처리한다(긴 지연 시 여러 절을 놓치지 않도록 반복).
     while (_phase == CounterPhase.running &&
         _intervalElapsed >= _intervalDuration) {
       // 지난 간격만큼 뺀다.
       _intervalElapsed -= _intervalDuration;
-      // 1배를 센다.
-      _countBow();
+      // 108배째 절의 간격까지 끝났으면 완료한다.
+      if (_count >= CounterRules.targetBowCount) {
+        // 긴 소리로 완료를 알린다.
+        _finishPractice();
+      } else {
+        // 소리와 함께 다음 절을 시작한다.
+        _startNextBow();
+      }
     }
   }
 
@@ -411,19 +422,20 @@ class CounterController extends ChangeNotifier {
     _startedAt ??= _now();
   }
 
-  // 1배를 세고 알림을 내며, 108배면 완료 처리한다.
-  void _countBow() {
-    // 절 수를 늘린다.
+  // 소리·진동과 함께 다음 절을 시작한다(소리가 나는 순간 절을 시작한다).
+  void _startNextBow() {
+    // 지금 하는 절 번호를 올린다.
     _count++;
-    // 목표 절 수에 도달했는지 확인한다.
-    final isFinalBow = _count >= CounterRules.targetBowCount;
-    // 소리·진동 알림을 보낸다(기다리지 않고 바로 다음 처리를 한다).
-    unawaited(_notifyBow(isFinalBow: isFinalBow));
-    // 108배면 완료 처리한다.
-    if (isFinalBow) {
-      // 완료 단계로 넘어간다.
-      _complete();
-    }
+    // 절 시작 알림을 보낸다(기다리지 않고 바로 다음 처리를 한다).
+    unawaited(_notifyBow(isFinalBow: false));
+  }
+
+  // 108배째 절의 간격이 끝나면 긴 알림과 함께 완료한다.
+  void _finishPractice() {
+    // 완료를 알리는 긴 소리·진동을 보낸다.
+    unawaited(_notifyBow(isFinalBow: true));
+    // 완료 단계로 넘어간다.
+    _complete();
   }
 
   // 108배를 마친 상태로 바꾸고 화면 켜짐 유지를 해제한다.

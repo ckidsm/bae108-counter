@@ -97,5 +97,6 @@
   "soundTempleBell": "Temple bell",
   "summaryIntervalLabel": "Interval",
   "summaryAlertLabel": "Alert",
-  "summaryBellValue": "{mode} · {sound}"
+  "summaryBellValue": "{mode} · {sound}",
+  "guideFinalBow": "Last bow · finishing in {seconds}s"
 }

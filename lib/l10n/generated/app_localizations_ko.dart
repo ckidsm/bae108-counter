@@ -342,4 +342,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String summaryBellValue(String mode, String sound) {
     return '$mode · $sound';
   }
+
+  @override
+  String guideFinalBow(int seconds) {
+    return '마지막 절 · $seconds초 후 완료';
+  }
 }

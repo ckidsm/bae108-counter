@@ -98,13 +98,15 @@ void main() {
       expect(controller.preparationRemainingSeconds, 9);
     });
 
-    test('tick_preparationFinished_startsRunningAtZeroBows', () {
+    test('tick_preparationFinished_startsFirstBowWithSound', () {
       // 준비 및 실행: 준비 카운트다운을 끝낸다.
       final controller = createRunningController();
 
-      // 검증: 0배에서 세기 시작하고 시작 시각이 기록된다.
+      // 검증: 준비가 끝나는 순간 소리와 함께 1배를 시작하고 시작 시각이 기록된다.
       expect(controller.phase, CounterPhase.running);
-      expect(controller.count, 0);
+      expect(controller.count, 1);
+      expect(feedbackService.calls, hasLength(1));
+      expect(feedbackService.calls.single.isFinalBow, isFalse);
       expect(controller.startedAt, _fixedNow);
       expect(controller.activeElapsed, Duration.zero);
     });
@@ -124,29 +126,29 @@ void main() {
   });
 
   group('간격 카운트', () {
-    test('tick_intervalElapsed_incrementsCountWithFeedback', () {
-      // 준비: 세는 중인 컨트롤러
+    test('tick_intervalElapsed_startsNextBowWithSound', () {
+      // 준비: 1배를 시작한 컨트롤러
       final controller = createRunningController();
 
       // 실행: 간격 하나만큼 진행한다.
       controller.tick(_interval);
 
-      // 검증: 1배가 되고 알림이 한 번 간다.
-      expect(controller.count, 1);
-      expect(feedbackService.calls, hasLength(1));
-      expect(feedbackService.calls.single.alertMode, AlertMode.bell);
-      expect(feedbackService.calls.single.isFinalBow, isFalse);
+      // 검증: 소리와 함께 2배를 시작한다.
+      expect(controller.count, 2);
+      expect(feedbackService.calls, hasLength(2));
+      expect(feedbackService.calls.last.alertMode, AlertMode.bell);
+      expect(feedbackService.calls.last.isFinalBow, isFalse);
     });
 
-    test('tick_beforeInterval_doesNotCount', () {
-      // 준비: 세는 중인 컨트롤러
+    test('tick_beforeInterval_keepsCurrentBow', () {
+      // 준비: 1배를 시작한 컨트롤러
       final controller = createRunningController();
 
       // 실행: 간격보다 1초 덜 진행한다.
       controller.tick(_interval - const Duration(seconds: 1));
 
-      // 검증: 아직 0배이고 1초 남는다.
-      expect(controller.count, 0);
+      // 검증: 아직 1배이고 다음 절까지 1초 남는다.
+      expect(controller.count, 1);
       expect(controller.nextBowRemainingSeconds, 1);
     });
 
@@ -157,8 +159,8 @@ void main() {
       // 실행: 간격 세 개만큼 한 번에 진행한다.
       controller.tick(_interval * 3);
 
-      // 검증: 3배를 놓치지 않고 센다.
-      expect(controller.count, 3);
+      // 검증: 1배에서 세 절을 놓치지 않고 4배가 된다.
+      expect(controller.count, 4);
     });
 
     test('innerRingProgress_halfInterval_returnsHalf', () {
@@ -175,7 +177,7 @@ void main() {
 
   group('정지와 다시 시작', () {
     test('stop_whileRunning_keepsCountAndScreenOn', () {
-      // 준비: 2배를 센 컨트롤러
+      // 준비: 3배째를 하고 있는 컨트롤러
       final controller = createRunningController();
       controller.tick(_interval * 2);
 
@@ -183,9 +185,9 @@ void main() {
       controller.stop();
       controller.tick(_interval * 5);
 
-      // 검증: 2배에서 멈추고 화면은 계속 켜져 있다.
+      // 검증: 3배에서 멈추고 화면은 계속 켜져 있다.
       expect(controller.phase, CounterPhase.paused);
-      expect(controller.count, 2);
+      expect(controller.count, 3);
       expect(wakeLockService.isEnabled, isTrue);
     });
 
@@ -202,7 +204,7 @@ void main() {
     });
 
     test('start_afterStopWithBows_resumesWithoutPreparation', () {
-      // 준비: 1배를 세고 정지한 컨트롤러
+      // 준비: 2배째에서 정지한 컨트롤러
       final controller = createRunningController();
       controller.tick(_interval);
       controller.stop();
@@ -212,7 +214,7 @@ void main() {
 
       // 검증: 준비 없이 바로 이어서 센다.
       expect(controller.phase, CounterPhase.running);
-      expect(controller.count, 1);
+      expect(controller.count, 2);
     });
 
     test('stop_whenIdle_isIgnored', () {
@@ -242,6 +244,28 @@ void main() {
         feedbackService.calls.where((call) => call.isFinalBow),
         hasLength(1),
       );
+    });
+
+    test('tick_bow108Started_staysRunningUntilItsIntervalEnds', () {
+      // 준비: 1배를 시작한 컨트롤러
+      final controller = createRunningController();
+
+      // 실행: 107번의 간격이 지나 108배째를 시작한다.
+      controller.tick(_interval * (CounterRules.targetBowCount - 1));
+
+      // 검증: 108배째 절을 하는 중이고 화면은 켜져 있으며 완료 알림은 아직 없다.
+      expect(controller.count, CounterRules.targetBowCount);
+      expect(controller.phase, CounterPhase.running);
+      expect(wakeLockService.isEnabled, isTrue);
+      expect(feedbackService.calls.where((call) => call.isFinalBow), isEmpty);
+
+      // 실행: 108배째 간격이 끝난다.
+      controller.tick(_interval);
+
+      // 검증: 긴 완료 알림과 함께 끝난다(절 시작 108번 + 완료 1번).
+      expect(controller.phase, CounterPhase.completed);
+      expect(feedbackService.calls, hasLength(CounterRules.targetBowCount + 1));
+      expect(feedbackService.calls.last.isFinalBow, isTrue);
     });
 
     test('tick_pastTarget_stopsAtTarget', () {
@@ -357,7 +381,7 @@ void main() {
       controller.tick(_interval);
 
       // 검증: 진동 알림이 간다.
-      expect(feedbackService.calls.single.alertMode, AlertMode.vibration);
+      expect(feedbackService.calls.last.alertMode, AlertMode.vibration);
     });
 
     test('setBellSound_clear_previewsAndUsesItForNextBow', () {
@@ -370,7 +394,7 @@ void main() {
 
       // 검증: 한 번 미리 들려주고, 다음 절에 맑은 종을 쓴다.
       expect(feedbackService.previews, <BellSound>[BellSound.clear]);
-      expect(feedbackService.calls.single.bellSound, BellSound.clear);
+      expect(feedbackService.calls.last.bellSound, BellSound.clear);
       expect(controller.settings.bellSound, BellSound.clear);
     });
 

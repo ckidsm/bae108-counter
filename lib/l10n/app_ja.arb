@@ -97,5 +97,6 @@
   "soundTempleBell": "梵鐘",
   "summaryIntervalLabel": "間隔",
   "summaryAlertLabel": "通知",
-  "summaryBellValue": "{mode} · {sound}"
+  "summaryBellValue": "{mode} · {sound}",
+  "guideFinalBow": "最後の拝 · {seconds}秒後に完了"
 }

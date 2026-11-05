@@ -345,4 +345,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String summaryBellValue(String mode, String sound) {
     return '$mode · $sound';
   }
+
+  @override
+  String guideFinalBow(int seconds) {
+    return 'Last bow · finishing in ${seconds}s';
+  }
 }

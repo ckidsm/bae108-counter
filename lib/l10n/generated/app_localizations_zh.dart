@@ -338,4 +338,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String summaryBellValue(String mode, String sound) {
     return '$mode · $sound';
   }
+
+  @override
+  String guideFinalBow(int seconds) {
+    return '最后一拜 · $seconds秒后完成';
+  }
 }

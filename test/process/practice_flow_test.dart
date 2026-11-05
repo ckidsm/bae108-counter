@@ -30,23 +30,29 @@ void main() {
     );
     await scrollAndTap(tester, find.text('시작'));
 
-    // 실행 1: 준비 10초 뒤 107배까지 세면 아직 진행 중이다.
+    // 실행 1: 준비 10초가 끝나는 순간 소리와 함께 1배를 시작한다.
     await advanceSeconds(tester, CounterRules.preparationSeconds);
+    expect(find.text('1'), findsOneWidget);
+    expect(testApp.feedbackService.calls, hasLength(1));
+
+    // 실행 2: 107번의 간격이 지나면 108배째를 시작하고, 아직 진행 중이다.
     await advanceIntervals(tester, CounterRules.targetBowCount - 1);
-    expect(find.text('107'), findsOneWidget);
+    expect(find.text('108'), findsOneWidget);
+    expect(find.text('마지막 절 · 5초 후 완료'), findsOneWidget);
+    expect(find.text('108배를 모두 마쳤습니다'), findsNothing);
     expect(testApp.wakeLockService.isEnabled, isTrue);
 
-    // 실행 2: 간격 하나 더 지나면 108배로 완료되고 화면 켜짐이 해제된다.
+    // 실행 3: 108배째 간격이 끝나면 긴 소리와 함께 완료되고 화면 켜짐이 해제된다.
     await advanceIntervals(tester, 1);
     expect(find.text('108배를 모두 마쳤습니다'), findsOneWidget);
     expect(testApp.wakeLockService.isEnabled, isFalse);
     expect(testApp.feedbackService.calls.last.isFinalBow, isTrue);
     expect(
       testApp.feedbackService.calls,
-      hasLength(CounterRules.targetBowCount),
+      hasLength(CounterRules.targetBowCount + 1),
     );
 
-    // 실행 3: 잠시 뒤 회향 화면이 열리고, 메모를 써서 저장한다.
+    // 실행 4: 잠시 뒤 회향 화면이 열리고, 메모를 써서 저장한다.
     await tester.pump(const Duration(seconds: 2));
     await tester.pumpAndSettle();
     expect(find.text('108배 회향'), findsOneWidget);
@@ -58,7 +64,7 @@ void main() {
     expect(find.text('기록을 저장했습니다'), findsOneWidget);
     expect(find.text('0'), findsOneWidget);
 
-    // 실행 4: 수행 기록 화면을 연다.
+    // 실행 5: 수행 기록 화면을 연다.
     await tester.tap(find.byTooltip('수행 기록'));
     await tester.pumpAndSettle();
 
@@ -87,27 +93,29 @@ void main() {
     await advanceSeconds(tester, 1);
     expect(find.text('9'), findsOneWidget);
 
-    // 실행 2: 준비가 끝나면 0배부터 세고, 5초 뒤 1배가 된다.
+    // 실행 2: 준비가 끝나는 순간 소리와 함께 1배, 5초 뒤 2배가 된다.
     await advanceSeconds(tester, CounterRules.preparationSeconds - 1);
     expect(find.text('준비'), findsNothing);
+    expect(find.text('1'), findsOneWidget);
+    expect(testApp.feedbackService.calls, hasLength(1));
     expect(find.text('다음 절까지 5초'), findsOneWidget);
     await advanceIntervals(tester, 1);
-    expect(find.text('1'), findsOneWidget);
+    expect(find.text('2'), findsOneWidget);
 
-    // 실행 3: 정지하면 시간이 흘러도 1배에서 멈춘다.
+    // 실행 3: 정지하면 시간이 흘러도 2배에서 멈춘다.
     await tester.tap(find.text('정지'));
     await tester.pump();
     await advanceSeconds(tester, 20);
-    expect(find.text('1'), findsOneWidget);
+    expect(find.text('2'), findsOneWidget);
     expect(find.text('정지됨 · 시작을 누르면 이어서 셉니다'), findsOneWidget);
     expect(testApp.wakeLockService.isEnabled, isTrue);
 
-    // 실행 4: 다시 시작하면 준비 없이 이어서 5초 뒤 2배가 된다.
+    // 실행 4: 다시 시작하면 준비 없이 이어서 5초 뒤 3배가 된다.
     await tester.tap(find.text('시작'));
     await tester.pump();
     expect(find.text('준비'), findsNothing);
     await advanceIntervals(tester, 1);
-    expect(find.text('2'), findsOneWidget);
+    expect(find.text('3'), findsOneWidget);
 
     // 실행 5: 정지 후 처음부터를 확인하면 0배로 돌아간다.
     await tester.tap(find.text('정지'));

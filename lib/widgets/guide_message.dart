@@ -58,10 +58,11 @@ class GuideMessage extends StatelessWidget {
       CounterPhase.preparing => localizations.guidePreparing(
         controller.preparationRemainingSeconds,
       ),
-      // 진행: 다음 절까지 남은 시간
-      CounterPhase.running => localizations.guideRunning(
-        controller.nextBowRemainingSeconds,
-      ),
+      // 진행: 108배째 절이면 완료까지, 아니면 다음 절까지 남은 시간
+      CounterPhase.running =>
+        controller.count >= CounterRules.targetBowCount
+            ? localizations.guideFinalBow(controller.nextBowRemainingSeconds)
+            : localizations.guideRunning(controller.nextBowRemainingSeconds),
       // 정지 안내
       CounterPhase.paused => localizations.guidePaused,
       // 완료 안내

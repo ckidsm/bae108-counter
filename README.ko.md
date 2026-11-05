@@ -91,8 +91,8 @@
 
 1. 메인 화면이 저장된 카운터 설정을 읽어 `CounterController`를 만듭니다. (`lib/screens/main_screen.dart`)
 2. 시작을 누르면 화면 켜짐 유지를 켜고, 실제 경과 시간을 재며 `tick()`을 부르는 100ms 타이머를 시작합니다. (`lib/controllers/counter_controller.dart`)
-3. 0배부터 시작하면 `tick()`이 먼저 10초 준비 카운트다운을 진행하고, 이후 간격이 지날 때마다 1배를 셉니다. 1배마다 선택한 알림이 울립니다. (`lib/controllers/counter_controller.dart`)
-4. 108배가 되면 컨트롤러가 타이머를 멈추고 종료 시각을 기록한 뒤 화면 켜짐 유지를 해제합니다. 1.5초 뒤 메인 화면이 완료 화면을 엽니다. (`lib/controllers/counter_controller.dart`, `lib/screens/main_screen.dart`)
+3. 0배부터 시작하면 `tick()`이 먼저 10초 준비 카운트다운을 진행하고, 이후 소리와 함께 각 절을 시작합니다. 준비가 끝나는 순간 소리가 나며 1배가 되고, 그 뒤 간격마다 소리와 함께 다음 절이 됩니다. 소리가 나면 절을 하면 됩니다. (`lib/controllers/counter_controller.dart`)
+4. 108배째 절을 시작하고 한 간격이 지나면 긴 소리로 완료를 알리고, 컨트롤러가 타이머를 멈추고 종료 시각을 기록한 뒤 화면 켜짐 유지를 해제합니다. 1.5초 뒤 메인 화면이 완료 화면을 엽니다. (`lib/controllers/counter_controller.dart`, `lib/screens/main_screen.dart`)
 5. 저장하면 수행 기록을 JSON으로 `shared_preferences`에 넣고, 켜져 있으면 캘린더에 일정을 추가합니다. 그 뒤 메인 화면이 카운터를 초기화합니다. (`lib/screens/completion_screen.dart`, `lib/services/practice_record_repository.dart`)
 6. 수행 기록 화면은 모든 기록을 읽어 연속 일수, 이번 주 체크, 이번 달 합계를 계산합니다. (`lib/screens/history_screen.dart`, `lib/services/practice_statistics_calculator.dart`)
 

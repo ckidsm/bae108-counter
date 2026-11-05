@@ -91,8 +91,8 @@ The app starts in `lib/main.dart`. (`lib/main.dart`)
 
 1. The main screen loads the saved counter settings and creates a `CounterController`. (`lib/screens/main_screen.dart`)
 2. Pressing Start enables the wake lock and starts a 100 ms timer that measures real elapsed time and calls `tick()`. (`lib/controllers/counter_controller.dart`)
-3. Starting from 0, `tick()` first runs the 10-second preparation countdown, then counts one bow each time the interval passes. Each bow triggers the selected feedback. (`lib/controllers/counter_controller.dart`)
-4. At 108 bows the controller stops the timer, records the end time, and releases the wake lock. After 1.5 seconds the main screen opens the completion screen. (`lib/controllers/counter_controller.dart`, `lib/screens/main_screen.dart`)
+3. Starting from 0, `tick()` first runs the 10-second preparation countdown, then starts each bow with its sound: bow 1 sounds the moment the countdown ends, and each following bow sounds one interval later, so the user bows when the sound plays. (`lib/controllers/counter_controller.dart`)
+4. One interval after bow 108 starts, a long sound marks completion and the controller stops the timer, records the end time, and releases the wake lock. After 1.5 seconds the main screen opens the completion screen. (`lib/controllers/counter_controller.dart`, `lib/screens/main_screen.dart`)
 5. Saving stores the session as JSON in `shared_preferences` and, if enabled, adds a calendar event. The main screen then resets the counter. (`lib/screens/completion_screen.dart`, `lib/services/practice_record_repository.dart`)
 6. The history screen reads all sessions and computes streaks, the weekly check row, and monthly totals. (`lib/screens/history_screen.dart`, `lib/services/practice_statistics_calculator.dart`)
 

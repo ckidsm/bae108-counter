@@ -689,6 +689,12 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'{mode} · {sound}'**
   String summaryBellValue(String mode, String sound);
+
+  /// No description provided for @guideFinalBow.
+  ///
+  /// In ko, this message translates to:
+  /// **'마지막 절 · {seconds}초 후 완료'**
+  String guideFinalBow(int seconds);
 }
 
 class _AppLocalizationsDelegate

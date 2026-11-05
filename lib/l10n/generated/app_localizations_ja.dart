@@ -340,4 +340,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String summaryBellValue(String mode, String sound) {
     return '$mode · $sound';
   }
+
+  @override
+  String guideFinalBow(int seconds) {
+    return '最後の拝 · $seconds秒後に完了';
+  }
 }

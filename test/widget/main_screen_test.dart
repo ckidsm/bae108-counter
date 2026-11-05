@@ -94,13 +94,13 @@ void main() {
   testWidgets('resetButton_afterStop_asksConfirmationBeforeClearing', (
     tester,
   ) async {
-    // 준비: 5초 간격으로 시작해 1배를 센 뒤 정지한다.
+    // 준비: 5초 간격으로 시작해 2배째에서 정지한다(준비 10초 끝에 1배, 5초 뒤 2배).
     await pumpTestApp(tester, intervalSeconds: 5);
     await scrollAndTap(tester, find.text('시작'));
     await advanceSeconds(tester, 15);
     await tester.tap(find.text('정지'));
     await tester.pump();
-    expect(find.text('1'), findsOneWidget);
+    expect(find.text('2'), findsOneWidget);
 
     // 실행: 처음부터 → 확인을 누른다.
     await tester.tap(find.text('처음부터'));
