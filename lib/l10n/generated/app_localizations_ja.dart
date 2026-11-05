@@ -345,4 +345,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String guideFinalBow(int seconds) {
     return '最後の拝 · $seconds秒後に完了';
   }
+
+  @override
+  String watchSessionsImported(int count) {
+    return 'Apple Watchの修行記録を$count件保存しました';
+  }
 }

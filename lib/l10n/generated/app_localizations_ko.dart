@@ -347,4 +347,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String guideFinalBow(int seconds) {
     return '마지막 절 · $seconds초 후 완료';
   }
+
+  @override
+  String watchSessionsImported(int count) {
+    return 'Apple Watch 수행 기록 $count건을 저장했습니다';
+  }
 }

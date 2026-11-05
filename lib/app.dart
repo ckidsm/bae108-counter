@@ -8,6 +8,7 @@ import 'services/bow_feedback_service.dart';
 import 'services/calendar_sync_service.dart';
 import 'services/practice_record_repository.dart';
 import 'services/wake_lock_service.dart';
+import 'services/watch_sync_service.dart';
 import 'theme/app_theme.dart';
 
 /*────────────────────────────────────────────────────────────────────────
@@ -24,6 +25,7 @@ class Bae108App extends StatelessWidget {
     required this.wakeLockService,
     required this.appSettingsController,
     required this.calendarSyncService,
+    this.watchSyncService = const NoopWatchSyncService(),
   });
 
   /// Stores practice records and settings.
@@ -40,6 +42,9 @@ class Bae108App extends StatelessWidget {
 
   /// Adds saved records to the device calendar.
   final CalendarSyncService calendarSyncService;
+
+  /// Syncs settings and records with the Apple Watch app.
+  final WatchSyncService watchSyncService;
 
   @override
   Widget build(BuildContext context) {
@@ -90,6 +95,8 @@ class Bae108App extends StatelessWidget {
         appSettingsController: appSettingsController,
         // 캘린더 서비스
         calendarSyncService: calendarSyncService,
+        // Apple Watch 연동 서비스
+        watchSyncService: watchSyncService,
       ),
     );
   }

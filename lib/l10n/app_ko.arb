@@ -258,5 +258,13 @@
         "type": "int"
       }
     }
+  },
+  "watchSessionsImported": "Apple Watch 수행 기록 {count}건을 저장했습니다",
+  "@watchSessionsImported": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

@@ -98,5 +98,6 @@
   "summaryIntervalLabel": "Interval",
   "summaryAlertLabel": "Alert",
   "summaryBellValue": "{mode} · {sound}",
-  "guideFinalBow": "Last bow · finishing in {seconds}s"
+  "guideFinalBow": "Last bow · finishing in {seconds}s",
+  "watchSessionsImported": "Saved {count} practice(s) from Apple Watch"
 }

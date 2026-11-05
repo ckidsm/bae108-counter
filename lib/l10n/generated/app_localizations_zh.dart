@@ -343,4 +343,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String guideFinalBow(int seconds) {
     return '最后一拜 · $seconds秒后完成';
   }
+
+  @override
+  String watchSessionsImported(int count) {
+    return '已保存来自 Apple Watch 的$count条修行记录';
+  }
 }

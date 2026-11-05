@@ -1,10 +1,14 @@
+import 'dart:async';
+
 import 'package:bae108_counter/models/alert_mode.dart';
 import 'package:bae108_counter/models/bell_sound.dart';
 import 'package:bae108_counter/models/bow_session.dart';
 import 'package:bae108_counter/models/calendar_target.dart';
+import 'package:bae108_counter/models/counter_settings.dart';
 import 'package:bae108_counter/services/bow_feedback_service.dart';
 import 'package:bae108_counter/services/calendar_sync_service.dart';
 import 'package:bae108_counter/services/wake_lock_service.dart';
+import 'package:bae108_counter/services/watch_sync_service.dart';
 
 /*────────────────────────────────────────────────────────────────────────
  Purpose  : Records one feedback call made by the controller.
@@ -163,4 +167,48 @@ class FakeCalendarSyncService implements CalendarSyncService {
       throw CalendarSyncException(configuredFailure, 'fake failure');
     }
   }
+}
+
+/*────────────────────────────────────────────────────────────────────────
+ Purpose  : Replaces the Apple Watch bridge with an in-memory queue.
+ Author   : YUNDEOKSOO                          Created : 2026-11-05
+────────────────────────────────────────────────────────────────────────*/
+/// 워치 브리지 대신 메모리에서 동작하는 가짜 워치 연동 서비스.
+class FakeWatchSyncService implements WatchSyncService {
+  /// The settings sent to the watch, in order.
+  final List<CounterSettings> sentSettings = <CounterSettings>[];
+
+  /// The records waiting to be taken, as if delivered by the watch.
+  final List<BowSession> pendingSessions = <BowSession>[];
+
+  // 새 기록 도착 알림 스트림
+  final StreamController<void> _sessionsAvailable =
+      StreamController<void>.broadcast();
+
+  /// Simulates the watch delivering [sessions] while the app is running.
+  void deliver(List<BowSession> sessions) {
+    // 대기열에 넣는다.
+    pendingSessions.addAll(sessions);
+    // 도착을 알린다.
+    _sessionsAvailable.add(null);
+  }
+
+  @override
+  Future<void> sendSettings(CounterSettings settings) async {
+    // 보낸 설정을 기록한다.
+    sentSettings.add(settings);
+  }
+
+  @override
+  Future<List<BowSession>> takeCompletedSessions() async {
+    // 대기열을 복사해 돌려주고 비운다.
+    final sessions = List<BowSession>.of(pendingSessions);
+    // 비운다.
+    pendingSessions.clear();
+    // 돌려준다.
+    return sessions;
+  }
+
+  @override
+  Stream<void> get sessionsAvailable => _sessionsAvailable.stream;
 }

@@ -350,4 +350,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String guideFinalBow(int seconds) {
     return 'Last bow · finishing in ${seconds}s';
   }
+
+  @override
+  String watchSessionsImported(int count) {
+    return 'Saved $count practice(s) from Apple Watch';
+  }
 }

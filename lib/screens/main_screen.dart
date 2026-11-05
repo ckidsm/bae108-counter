@@ -11,6 +11,7 @@ import '../services/bow_feedback_service.dart';
 import '../services/calendar_sync_service.dart';
 import '../services/practice_record_repository.dart';
 import '../services/wake_lock_service.dart';
+import '../services/watch_sync_service.dart';
 import '../theme/app_colors.dart';
 import '../widgets/ascetic_emblem.dart';
 import '../widgets/clock_header.dart';
@@ -39,6 +40,7 @@ class MainScreen extends StatefulWidget {
     required this.wakeLockService,
     required this.appSettingsController,
     required this.calendarSyncService,
+    this.watchSyncService = const NoopWatchSyncService(),
   });
 
   /// Stores practice records and settings.
@@ -55,6 +57,9 @@ class MainScreen extends StatefulWidget {
 
   /// Adds saved records to the device calendar.
   final CalendarSyncService calendarSyncService;
+
+  /// Syncs settings and records with the Apple Watch app.
+  final WatchSyncService watchSyncService;
 
   @override
   State<MainScreen> createState() => _MainScreenState();
@@ -81,6 +86,8 @@ class _MainScreenState extends State<MainScreen> {
   late final CounterController _controller;
   // 직전 단계(완료로 바뀌는 순간을 알기 위함)
   CounterPhase _previousPhase = CounterPhase.idle;
+  // 워치 기록 도착 알림 구독
+  StreamSubscription<void>? _watchSubscription;
   // 회향 화면이 열려 있는지 여부(중복으로 열지 않기 위함)
   bool _isCompletionScreenOpen = false;
 
@@ -99,10 +106,20 @@ class _MainScreenState extends State<MainScreen> {
     );
     // 단계 변화를 감시한다.
     _controller.addListener(_handleControllerChanged);
+    // 워치에 현재 설정을 보낸다.
+    unawaited(widget.watchSyncService.sendSettings(_controller.settings));
+    // 워치에서 새 기록이 도착하면 가져온다.
+    _watchSubscription = widget.watchSyncService.sessionsAvailable.listen(
+      (_) => unawaited(_importWatchSessions()),
+    );
+    // 앱이 꺼져 있는 동안 쌓인 워치 기록도 가져온다.
+    unawaited(_importWatchSessions());
   }
 
   @override
   void dispose() {
+    // 워치 기록 도착 감시를 해제한다.
+    unawaited(_watchSubscription?.cancel());
     // 감시를 해제한다.
     _controller.removeListener(_handleControllerChanged);
     // 컨트롤러를 정리한다(타이머·화면 켜짐 해제).
@@ -327,6 +344,57 @@ class _MainScreenState extends State<MainScreen> {
     change();
     // 바뀐 설정을 저장한다(완료를 기다리지 않는다).
     unawaited(widget.repository.saveSettings(_controller.settings));
+    // 워치도 같은 간격으로 세도록 보낸다.
+    unawaited(widget.watchSyncService.sendSettings(_controller.settings));
+  }
+
+  // 워치에서 끝낸 수행 기록을 가져와 아직 없는 것만 저장한다.
+  Future<void> _importWatchSessions() async {
+    // 워치 기록을 가져온다.
+    final watchSessions = await widget.watchSyncService.takeCompletedSessions();
+    // 없으면 끝낸다.
+    if (watchSessions.isEmpty) {
+      // 처리 끝
+      return;
+    }
+    // 이미 저장된 기록 식별자
+    final savedIds = widget.repository
+        .loadSessions()
+        .map((session) => session.id)
+        .toSet();
+    // 새로 저장한 개수
+    var importedCount = 0;
+    // 아직 없는 기록만 저장한다(같은 기록이 두 번 와도 한 번만 저장).
+    for (final session in watchSessions) {
+      // 이미 있으면 건너뛴다.
+      if (!savedIds.add(session.id)) {
+        // 중복
+        continue;
+      }
+      // 저장은 실패할 수 있다.
+      try {
+        // 기록을 저장한다.
+        await widget.repository.addSession(session);
+        // 개수를 센다.
+        importedCount++;
+      } on StateError catch (error) {
+        // 실패한 기록을 남긴다.
+        debugPrint('[MainScreen] 워치 기록 저장 실패 ${session.id}: $error');
+      }
+    }
+    // 저장한 것이 없거나 화면이 사라졌으면 끝낸다.
+    if (importedCount == 0 || !mounted) {
+      // 처리 끝
+      return;
+    }
+    // "Apple Watch 수행 기록 N건을 저장했습니다"
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          AppLocalizations.of(context).watchSessionsImported(importedCount),
+        ),
+      ),
+    );
   }
 
   // 단계가 완료로 바뀌면 잠시 후 회향 화면을 연다.

@@ -695,6 +695,12 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'마지막 절 · {seconds}초 후 완료'**
   String guideFinalBow(int seconds);
+
+  /// No description provided for @watchSessionsImported.
+  ///
+  /// In ko, this message translates to:
+  /// **'Apple Watch 수행 기록 {count}건을 저장했습니다'**
+  String watchSessionsImported(int count);
 }
 
 class _AppLocalizationsDelegate

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -5,8 +6,10 @@ import 'app.dart';
 import 'controllers/app_settings_controller.dart';
 import 'services/device_bow_feedback_service.dart';
 import 'services/device_calendar_sync_service.dart';
+import 'services/method_channel_watch_sync_service.dart';
 import 'services/practice_record_repository.dart';
 import 'services/wake_lock_service.dart';
+import 'services/watch_sync_service.dart';
 
 /*────────────────────────────────────────────────────────────────────────
  Purpose  : Starts the app after loading shared_preferences.
@@ -33,6 +36,10 @@ Future<void> main() async {
       appSettingsController: AppSettingsController(repository),
       // 기기 캘린더(Google 계정 캘린더 포함) 서비스
       calendarSyncService: DeviceCalendarSyncService(),
+      // iOS에서만 Apple Watch 연동, 그 외 플랫폼은 빈 구현
+      watchSyncService: defaultTargetPlatform == TargetPlatform.iOS
+          ? MethodChannelWatchSyncService()
+          : const NoopWatchSyncService(),
     ),
   );
 }

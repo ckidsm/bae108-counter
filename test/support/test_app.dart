@@ -38,6 +38,7 @@ class TestApp {
     required this.feedbackService,
     required this.wakeLockService,
     required this.calendarSyncService,
+    required this.watchSyncService,
   });
 
   /// The record store backed by in-memory preferences.
@@ -54,6 +55,9 @@ class TestApp {
 
   /// The fake calendar.
   final FakeCalendarSyncService calendarSyncService;
+
+  /// The fake Apple Watch bridge.
+  final FakeWatchSyncService watchSyncService;
 }
 
 /*────────────────────────────────────────────────────────────────────────
@@ -68,6 +72,7 @@ Future<TestApp> pumpTestApp(
   bool resetPreferences = true,
   int? intervalSeconds,
   FakeCalendarSyncService? calendarSyncService,
+  FakeWatchSyncService? watchSyncService,
 }) async {
   // 휴대폰 크기 화면으로 맞춘다.
   tester.view.physicalSize = _phonePhysicalSize;
@@ -109,6 +114,7 @@ Future<TestApp> pumpTestApp(
         FakeCalendarSyncService(
           calendars: <CalendarTarget>[testGoogleCalendar],
         ),
+    watchSyncService: watchSyncService ?? FakeWatchSyncService(),
   );
   // 앱을 그린다.
   await tester.pumpWidget(
@@ -118,6 +124,7 @@ Future<TestApp> pumpTestApp(
       wakeLockService: testApp.wakeLockService,
       appSettingsController: testApp.appSettingsController,
       calendarSyncService: testApp.calendarSyncService,
+      watchSyncService: testApp.watchSyncService,
     ),
   );
   // 번역 로딩을 기다린다.
