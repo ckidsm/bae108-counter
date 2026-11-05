@@ -4,20 +4,6 @@
   "mainTitle": "오늘의 108배",
   "keepScreenOnNotice": "108배까지 화면 켜짐 유지",
   "historyTooltip": "수행 기록",
-  "countModeTitle": "카운트 방식",
-  "countModeTap": "직접 탭",
-  "countModeAuto": "자동 간격",
-  "intervalTitle": "절 간격",
-  "intervalCustom": "직접 설정",
-  "intervalCustomSelected": "직접 · {duration}",
-  "@intervalCustomSelected": {
-    "placeholders": {
-      "duration": {
-        "type": "String"
-      }
-    }
-  },
-  "customIntervalSheetTitle": "절 간격 직접 설정",
   "customIntervalRange": "{minimum} ~ {maximum}, {step} 단위",
   "@customIntervalRange": {
     "placeholders": {
@@ -32,7 +18,6 @@
       }
     }
   },
-  "customIntervalApply": "적용",
   "durationSeconds": "{seconds}초",
   "@durationSeconds": {
     "placeholders": {
@@ -91,15 +76,6 @@
       }
     }
   },
-  "guideIdleTap": "원을 탭하거나 시작을 누르세요",
-  "guideIdleAuto": "시작하면 {seconds}초 준비 후 셈을 시작합니다",
-  "@guideIdleAuto": {
-    "placeholders": {
-      "seconds": {
-        "type": "int"
-      }
-    }
-  },
   "guidePreparing": "자세를 갖추세요 · {seconds}초 후 시작",
   "@guidePreparing": {
     "placeholders": {
@@ -108,24 +84,13 @@
       }
     }
   },
-  "guideRunningTap": "원을 탭할 때마다 1배씩 셉니다",
-  "guideRunningAuto": "다음 절까지 {seconds}초",
-  "@guideRunningAuto": {
-    "placeholders": {
-      "seconds": {
-        "type": "int"
-      }
-    }
-  },
-  "guidePaused": "일시정지 중 · 이어서를 누르세요",
+  "guidePaused": "정지됨 · 시작을 누르면 이어서 셉니다",
   "guideCompleted": "108배를 모두 마쳤습니다",
   "alertModeTitle": "알림 방식",
   "alertModeBell": "종소리",
   "alertModeVibration": "진동",
   "alertModeSilent": "무음",
   "buttonStart": "시작",
-  "buttonResume": "이어서",
-  "buttonPause": "일시정지",
   "buttonDedication": "회향하기",
   "buttonReset": "처음부터",
   "resetConfirmTitle": "처음부터 다시 할까요?",
@@ -208,7 +173,7 @@
   "settingsTooltip": "설정",
   "settingsTitle": "설정",
   "settingsIntervalSection": "카운트 간격",
-  "settingsIntervalDescription": "자동 간격 방식에서 1배를 세는 간격입니다",
+  "settingsIntervalDescription": "시작하면 이 간격마다 1배씩 셉니다",
   "settingsThemeSection": "색상 테마",
   "themeBlack": "검정",
   "themeCharcoal": "차콜",
@@ -245,5 +210,45 @@
   "accentGold": "금빛",
   "accentBlue": "블루",
   "accentDeepBlue": "딥 블루",
-  "accentGray": "그레이"
+  "accentGray": "그레이",
+  "guideRunning": "다음 절까지 {seconds}초",
+  "@guideRunning": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "buttonStop": "정지",
+  "guideIdle": "시작하면 {seconds}초 준비 후 {interval}마다 1배씩 셉니다",
+  "@guideIdle": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      },
+      "interval": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsSoundSection": "종소리",
+  "settingsSoundDescription": "알림 방식이 종소리일 때 울리는 소리입니다. 누르면 바로 들어 볼 수 있습니다",
+  "soundDeep": "중저음 종",
+  "soundClear": "맑은 종",
+  "soundChime": "풍경",
+  "soundMoktak": "목탁",
+  "soundTempleBell": "범종",
+  "summaryIntervalLabel": "절 간격",
+  "summaryAlertLabel": "알림",
+  "summaryBellValue": "{mode} · {sound}",
+  "@summaryBellValue": {
+    "placeholders": {
+      "mode": {
+        "type": "String"
+      },
+      "sound": {
+        "type": "String"
+      }
+    }
+  }
 }

@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import '../controllers/counter_controller.dart';
 import '../controllers/counter_rules.dart';
 import '../l10n/generated/app_localizations.dart';
-import '../models/count_mode.dart';
 import '../models/counter_phase.dart';
 import '../theme/app_colors.dart';
+import 'display_formats.dart';
 
 /*────────────────────────────────────────────────────────────────────────
  Purpose  : Shows the guide sentence for the current phase, such as the time to the next bow.
@@ -46,25 +46,23 @@ class GuideMessage extends StatelessWidget {
     AppLocalizations localizations,
     CounterController controller,
   ) {
-    // 자동 간격 방식인지 여부
-    final isAutoMode = controller.countMode == CountMode.auto;
     // 단계별로 문구를 고른다.
     return switch (controller.phase) {
-      // 대기: 방식에 따라 시작 안내
-      CounterPhase.idle =>
-        isAutoMode
-            ? localizations.guideIdleAuto(CounterRules.preparationSeconds)
-            : localizations.guideIdleTap,
+      // 대기: 준비 시간과 간격 안내
+      CounterPhase.idle => localizations.guideIdle(
+        CounterRules.preparationSeconds,
+        DisplayFormatter(localizations)
+            .formatDuration(Duration(seconds: controller.intervalSeconds)),
+      ),
       // 준비: 남은 준비 시간
       CounterPhase.preparing => localizations.guidePreparing(
         controller.preparationRemainingSeconds,
       ),
-      // 진행: 자동이면 다음 절까지 남은 시간, 탭이면 탭 안내
-      CounterPhase.running =>
-        isAutoMode
-            ? localizations.guideRunningAuto(controller.nextBowRemainingSeconds)
-            : localizations.guideRunningTap,
-      // 일시정지 안내
+      // 진행: 다음 절까지 남은 시간
+      CounterPhase.running => localizations.guideRunning(
+        controller.nextBowRemainingSeconds,
+      ),
+      // 정지 안내
       CounterPhase.paused => localizations.guidePaused,
       // 완료 안내
       CounterPhase.completed => localizations.guideCompleted,

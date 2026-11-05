@@ -1,4 +1,5 @@
 import 'package:bae108_counter/models/alert_mode.dart';
+import 'package:bae108_counter/models/bell_sound.dart';
 import 'package:bae108_counter/models/bow_session.dart';
 import 'package:bae108_counter/models/calendar_target.dart';
 import 'package:bae108_counter/services/bow_feedback_service.dart';
@@ -12,10 +13,17 @@ import 'package:bae108_counter/services/wake_lock_service.dart';
 /// 컨트롤러가 요청한 알림 1건.
 class RecordedFeedback {
   /// Creates a recorded call.
-  const RecordedFeedback(this.alertMode, {required this.isFinalBow});
+  const RecordedFeedback(
+    this.alertMode, {
+    required this.bellSound,
+    required this.isFinalBow,
+  });
 
   /// The requested feedback.
   final AlertMode alertMode;
+
+  /// The bell sound requested with the feedback.
+  final BellSound bellSound;
 
   /// Whether the call was for the final bow.
   final bool isFinalBow;
@@ -30,13 +38,25 @@ class FakeBowFeedbackService implements BowFeedbackService {
   /// The feedback calls in the order they were made.
   final List<RecordedFeedback> calls = <RecordedFeedback>[];
 
+  /// The bell sounds previewed in the order they were played.
+  final List<BellSound> previews = <BellSound>[];
+
   @override
   Future<void> notifyBow(
     AlertMode alertMode, {
+    required BellSound bellSound,
     required bool isFinalBow,
   }) async {
     // 호출 내용을 기록한다.
-    calls.add(RecordedFeedback(alertMode, isFinalBow: isFinalBow));
+    calls.add(
+      RecordedFeedback(alertMode, bellSound: bellSound, isFinalBow: isFinalBow),
+    );
+  }
+
+  @override
+  Future<void> previewBell(BellSound bellSound) async {
+    // 미리 듣기 요청을 기록한다.
+    previews.add(bellSound);
   }
 
   @override

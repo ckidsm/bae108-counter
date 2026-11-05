@@ -6,7 +6,7 @@ An Android and iOS app that counts a 108-bow practice by tap or at a fixed inter
 
 ## Overview
 
-The app helps a person doing the 108-bow practice keep count without looking away. Each bow is counted either by tapping the large circle or automatically at an interval from 5 seconds to 3 minutes, and a bell, a vibration, or nothing marks each bow. (`lib/controllers/counter_controller.dart`, `lib/services/device_bow_feedback_service.dart`)
+The app helps a person doing the 108-bow practice keep count without looking away. After Start is pressed, one bow is counted automatically at a chosen interval from 5 seconds to 3 minutes, and a bell, a vibration, or nothing marks each bow. (`lib/controllers/counter_controller.dart`, `lib/services/device_bow_feedback_service.dart`)
 
 When the 108th bow is reached the counter stops, the screen is allowed to turn off again, and a completion screen shows the duration, the average time per bow, and the current streak. The practice can be saved with a one-line memo. (`lib/screens/completion_screen.dart`)
 
@@ -16,22 +16,24 @@ The app has no server component and no user account of its own. It was verified 
 
 ## Key Features
 
-- **Tap counting** – each tap on the circle counts one bow. (`lib/widgets/counter_ring.dart`, `lib/controllers/counter_controller.dart`)
-- **Automatic interval** – 5, 10, or 20-second presets, or a custom value from 5 seconds to 3 minutes in 5-second steps. (`lib/widgets/interval_selector.dart`, `lib/widgets/interval_slider.dart`, `lib/controllers/counter_rules.dart`)
-- **10-second preparation countdown** – when automatic counting starts from 0, a 10 → 1 countdown runs before counting; resuming after a pause skips it. Tapping the circle in automatic mode counts one bow immediately and restarts the interval. (`lib/controllers/counter_controller.dart`)
-- **Per-bow feedback** – bell (`assets/sounds/bell.mp3`, falling back to the system click sound if the file is missing), vibration, or silent; the 108th bow is longer. (`lib/services/device_bow_feedback_service.dart`)
+- **Interval counting** – 5, 10, or 20-second presets, or a custom value from 5 seconds to 3 minutes in 5-second steps, set on the Settings screen. (`lib/screens/settings_screen.dart`, `lib/widgets/interval_slider.dart`, `lib/controllers/counter_rules.dart`)
+- **One-screen main view** – the main screen shows the current interval and alert in one tappable line that opens Settings, and fits without scrolling; the counter ring sizes itself to the remaining height. (`lib/widgets/settings_summary_bar.dart`, `lib/screens/main_screen.dart`, `lib/widgets/counter_ring.dart`)
+- **Start | Stop | Restart** – Start begins counting, Stop pauses while keeping the count, and Restart clears it after a confirmation. (`lib/widgets/counter_controls.dart`, `lib/screens/main_screen.dart`)
+- **10-second preparation countdown** – starting from 0 runs a 10 → 1 countdown before counting; starting again after Stop continues without it. (`lib/controllers/counter_controller.dart`)
+- **Per-bow feedback** – bell, vibration, or silent; the 108th bow is longer. Four bell sounds can be chosen in Settings: deep bell (default), clear bell, wind chime, and moktak. If a sound file is missing, the system click sound is used. (`lib/services/device_bow_feedback_service.dart`, `assets/sounds/`)
 - **Screen kept on** until the practice is completed or reset. (`lib/services/wake_lock_service.dart`)
 - **Progress display** – an orange outer ring that turns fully green with a green border when completed, a thin inner ring for the time to the next bow, and four 27-bow segment bars. (`lib/widgets/counter_ring.dart`, `lib/widgets/segment_progress_bars.dart`)
 - **Practice history** – current and longest streak, Monday-to-Sunday check marks, this month's session count and total bows, and a list of recent practices. (`lib/screens/history_screen.dart`, `lib/services/practice_statistics_calculator.dart`)
-- **Settings** – count interval, background color (7 presets, including the white, dark gray, and light gray of palette #574), and button color (gold, blue #1976D2, deep blue #1565C0, gray #424242). (`lib/screens/settings_screen.dart`, `lib/theme/app_colors.dart`)
+- **Settings** – count interval, bell sound, background color (7 presets, including the white, dark gray, and light gray of palette #574), and button color (gold, blue #1976D2, deep blue #1565C0, gray #424242). (`lib/screens/settings_screen.dart`, `lib/theme/app_colors.dart`)
 - **Calendar recording** – when enabled, saving a record also adds an event with the start/end time, duration, and memo to the chosen device calendar. (`lib/screens/completion_screen.dart`, `lib/services/device_calendar_sync_service.dart`)
+- **App icon and emblem** – a bowing figure with "108" on gold as the app icon, and a round ascetic Buddha emblem next to the main title that follows the selected colors. To change the icon, replace `assets/icon/app_icon.png` and run `dart run flutter_launcher_icons`. (`assets/icon/`, `flutter_launcher_icons.yaml`, `lib/widgets/ascetic_emblem.dart`)
 - **Four languages** – Korean, English, Japanese, and Chinese; other device languages fall back to English. (`lib/l10n/`)
 
 ## Concepts / Domain Model
 
 ### Counter phase
 
-A practice moves through `idle`, `preparing` (automatic mode only), `running`, `paused`, and `completed`. Time advances only through `CounterController.tick()`, which the app calls from a 100 ms timer and tests call directly. (`lib/models/counter_phase.dart`, `lib/controllers/counter_controller.dart`)
+A practice moves through `idle`, `preparing`, `running`, `paused`, and `completed`. Time advances only through `CounterController.tick()`, which the app calls from a 100 ms timer and tests call directly. (`lib/models/counter_phase.dart`, `lib/controllers/counter_controller.dart`)
 
 ### Bow session
 
@@ -69,7 +71,9 @@ The app has no authentication or authorization flow; calendar access is granted 
 │   ├── widgets/               # Counter ring, selectors, swatches, formatters
 │   ├── theme/                 # Color palettes and Material 3 theme
 │   └── l10n/                  # .arb translations and generated localization code
-├── assets/sounds/bell.mp3     # Bell sound
+├── assets/sounds/            # Bell sounds (deep, clear, chime, moktak)
+├── assets/icon/               # App icon sources for flutter_launcher_icons
+├── flutter_launcher_icons.yaml # App icon generation settings
 ├── test/
 │   ├── unit/                  # Controllers, models, services
 │   ├── widget/                # Screen-level functional tests
@@ -86,8 +90,8 @@ The app starts in `lib/main.dart`. (`lib/main.dart`)
 ## How It Works
 
 1. The main screen loads the saved counter settings and creates a `CounterController`. (`lib/screens/main_screen.dart`)
-2. Pressing Start or tapping the circle enables the wake lock and starts a 100 ms timer that measures real elapsed time and calls `tick()`. (`lib/controllers/counter_controller.dart`)
-3. In automatic mode starting from 0, `tick()` first runs the 10-second preparation countdown, then counts one bow each time the interval passes. Each bow triggers the selected feedback. (`lib/controllers/counter_controller.dart`)
+2. Pressing Start enables the wake lock and starts a 100 ms timer that measures real elapsed time and calls `tick()`. (`lib/controllers/counter_controller.dart`)
+3. Starting from 0, `tick()` first runs the 10-second preparation countdown, then counts one bow each time the interval passes. Each bow triggers the selected feedback. (`lib/controllers/counter_controller.dart`)
 4. At 108 bows the controller stops the timer, records the end time, and releases the wake lock. After 1.5 seconds the main screen opens the completion screen. (`lib/controllers/counter_controller.dart`, `lib/screens/main_screen.dart`)
 5. Saving stores the session as JSON in `shared_preferences` and, if enabled, adds a calendar event. The main screen then resets the counter. (`lib/screens/completion_screen.dart`, `lib/services/practice_record_repository.dart`)
 6. The history screen reads all sessions and computes streaks, the weekly check row, and monthly totals. (`lib/screens/history_screen.dart`, `lib/services/practice_statistics_calculator.dart`)

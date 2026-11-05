@@ -22,35 +22,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get historyTooltip => 'Practice history';
 
   @override
-  String get countModeTitle => 'Counting mode';
-
-  @override
-  String get countModeTap => 'Tap';
-
-  @override
-  String get countModeAuto => 'Auto interval';
-
-  @override
-  String get intervalTitle => 'Bow interval';
-
-  @override
-  String get intervalCustom => 'Custom';
-
-  @override
-  String intervalCustomSelected(String duration) {
-    return 'Custom · $duration';
-  }
-
-  @override
-  String get customIntervalSheetTitle => 'Custom bow interval';
-
-  @override
   String customIntervalRange(String minimum, String maximum, String step) {
     return '$minimum – $maximum, in steps of $step';
   }
-
-  @override
-  String get customIntervalApply => 'Apply';
 
   @override
   String durationSeconds(int seconds) {
@@ -86,28 +60,12 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get guideIdleTap => 'Tap the circle or press Start';
-
-  @override
-  String guideIdleAuto(int seconds) {
-    return 'Counting begins after a $seconds-second countdown';
-  }
-
-  @override
   String guidePreparing(int seconds) {
     return 'Get into position · starting in ${seconds}s';
   }
 
   @override
-  String get guideRunningTap => 'Each tap on the circle counts one bow';
-
-  @override
-  String guideRunningAuto(int seconds) {
-    return 'Next bow in ${seconds}s';
-  }
-
-  @override
-  String get guidePaused => 'Paused · press Resume';
+  String get guidePaused => 'Stopped · press Start to continue';
 
   @override
   String get guideCompleted => 'All 108 bows completed';
@@ -126,12 +84,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get buttonStart => 'Start';
-
-  @override
-  String get buttonResume => 'Resume';
-
-  @override
-  String get buttonPause => 'Pause';
 
   @override
   String get buttonDedication => 'Dedicate';
@@ -259,7 +211,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsIntervalDescription =>
-      'How often one bow is counted in auto interval mode';
+      'One bow is counted at this interval after you press Start';
 
   @override
   String get settingsThemeSection => 'Color theme';
@@ -347,4 +299,50 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get accentGray => 'Gray';
+
+  @override
+  String guideRunning(int seconds) {
+    return 'Next bow in ${seconds}s';
+  }
+
+  @override
+  String get buttonStop => 'Stop';
+
+  @override
+  String guideIdle(int seconds, String interval) {
+    return 'After a $seconds-second countdown, one bow is counted every $interval';
+  }
+
+  @override
+  String get settingsSoundSection => 'Bell sound';
+
+  @override
+  String get settingsSoundDescription =>
+      'Played when the alert is set to bell. Tap to hear it';
+
+  @override
+  String get soundDeep => 'Deep bell';
+
+  @override
+  String get soundClear => 'Clear bell';
+
+  @override
+  String get soundChime => 'Wind chime';
+
+  @override
+  String get soundMoktak => 'Moktak';
+
+  @override
+  String get soundTempleBell => 'Temple bell';
+
+  @override
+  String get summaryIntervalLabel => 'Interval';
+
+  @override
+  String get summaryAlertLabel => 'Alert';
+
+  @override
+  String summaryBellValue(String mode, String sound) {
+    return '$mode · $sound';
+  }
 }

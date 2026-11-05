@@ -6,22 +6,19 @@ import '../controllers/app_settings_controller.dart';
 import '../controllers/counter_controller.dart';
 import '../controllers/counter_rules.dart';
 import '../l10n/generated/app_localizations.dart';
-import '../models/count_mode.dart';
 import '../models/counter_phase.dart';
 import '../services/bow_feedback_service.dart';
 import '../services/calendar_sync_service.dart';
 import '../services/practice_record_repository.dart';
 import '../services/wake_lock_service.dart';
 import '../theme/app_colors.dart';
-import '../widgets/alert_mode_selector.dart';
+import '../widgets/ascetic_emblem.dart';
 import '../widgets/clock_header.dart';
-import '../widgets/count_mode_selector.dart';
 import '../widgets/counter_controls.dart';
 import '../widgets/counter_ring.dart';
 import '../widgets/guide_message.dart';
-import '../widgets/interval_selector.dart';
-import '../widgets/section_label.dart';
 import '../widgets/segment_progress_bars.dart';
+import '../widgets/settings_summary_bar.dart';
 import 'completion_screen.dart';
 import 'history_screen.dart';
 import 'settings_screen.dart';
@@ -127,67 +124,48 @@ class _MainScreenState extends State<MainScreen> {
           // 감시 대상
           listenable: _controller,
           // 화면 내용
-          builder: (context, _) => SingleChildScrollView(
+          builder: (context, _) => Padding(
             // 여백
             padding: const EdgeInsets.symmetric(
               horizontal: _horizontalPadding,
               vertical: _verticalPadding,
             ),
-            // 위에서 아래로 쌓는다.
+            // 스크롤 없이 한 화면에 위에서 아래로 놓는다.
             child: Column(
               // 왼쪽 정렬
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                // 시계와 기록 버튼
+                // 시계와 기록·설정 버튼
                 _buildHeader(localizations),
                 // 간격
                 const SizedBox(height: _smallSpacing),
-                // 제목과 화면 켜짐 안내
+                // 엠블럼과 제목·화면 켜짐 안내
                 _buildTitle(localizations),
                 // 간격
-                const SizedBox(height: _largeSpacing),
-                // 카운트 방식과 간격
-                _buildCountOptions(localizations),
-                // 간격
-                const SizedBox(height: _largeSpacing),
-                // 원형 카운터
-                _buildCounterRing(localizations),
-                // 간격
-                const SizedBox(height: _largeSpacing),
-                // 27배 구간 막대
-                SegmentProgressBars(
-                  // 현재 절 수
-                  count: _controller.count,
-                  // 완료 여부
-                  isCompleted: _controller.isCompleted,
-                ),
-                // 간격
                 const SizedBox(height: _mediumSpacing),
-                // 안내 문구(가운데)
-                Center(child: GuideMessage(controller: _controller)),
-                // 간격
-                const SizedBox(height: _largeSpacing),
-                // 알림 방식 제목
-                SectionLabel(localizations.alertModeTitle),
-                // 알림 방식 선택
-                AlertModeSelector(
-                  // 현재 알림 방식
-                  selectedMode: _controller.alertMode,
-                  // 바꾸면 저장한다.
-                  onChanged: (alertMode) => _updateSettings(
-                    () => _controller.setAlertMode(alertMode),
-                  ),
+                // 절 간격·알림 요약(누르면 설정)
+                SettingsSummaryBar(
+                  // 절 간격(초)
+                  intervalSeconds: _controller.intervalSeconds,
+                  // 알림 방식
+                  alertMode: _controller.alertMode,
+                  // 종소리 종류
+                  bellSound: _controller.bellSound,
+                  // 누르면 설정 화면을 연다.
+                  onTap: _openSettings,
                 ),
-                // 간격
-                const SizedBox(height: _largeSpacing),
-                // 하단 버튼
+                // 원형 카운터·구간 막대·안내 문구가 남은 높이를 차지한다.
+                Expanded(child: _buildCounterArea(localizations)),
+                // 하단 버튼(화면 아래 고정)
                 CounterControls(
                   // 현재 단계
                   phase: _controller.phase,
                   // 현재 절 수
                   count: _controller.count,
-                  // 시작/일시정지/회향
-                  onPrimaryPressed: _handlePrimaryPressed,
+                  // 시작(완료 후에는 회향하기)
+                  onStart: _handleStartPressed,
+                  // 정지(센 수 유지)
+                  onStop: _controller.stop,
                   // 처음부터
                   onReset: _confirmReset,
                 ),
@@ -228,8 +206,23 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
-  // 제목과 화면 켜짐 안내
+  // 고행상 엠블럼과 제목·화면 켜짐 안내
   Widget _buildTitle(AppLocalizations localizations) {
+    // 엠블럼을 왼쪽에, 제목 묶음을 오른쪽에 둔다.
+    return Row(
+      children: <Widget>[
+        // 고행상 엠블럼
+        const AsceticEmblem(),
+        // 간격
+        const SizedBox(width: _mediumSpacing),
+        // 제목 묶음이 남은 폭을 차지한다.
+        Expanded(child: _buildTitleText(localizations)),
+      ],
+    );
+  }
+
+  // 제목과 화면 켜짐 안내
+  Widget _buildTitleText(AppLocalizations localizations) {
     // 글자 스타일
     final textTheme = Theme.of(context).textTheme;
     // 세로로 쌓는다.
@@ -277,39 +270,30 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
-  // 카운트 방식 세그먼트와 간격 칩
-  Widget _buildCountOptions(AppLocalizations localizations) {
-    // 세로로 쌓는다.
+  // 원형 카운터, 27배 구간 막대, 안내 문구(남은 높이 안에서 가운데 정렬)
+  Widget _buildCounterArea(AppLocalizations localizations) {
+    // 세로 가운데 정렬
     return Column(
-      // 왼쪽 정렬
-      crossAxisAlignment: CrossAxisAlignment.start,
+      // 세로 가운데
+      mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        // "카운트 방식"
-        SectionLabel(localizations.countModeTitle),
-        // 방식 선택(진행 중에는 바꿀 수 없다)
-        CountModeSelector(
-          // 현재 방식
-          selectedMode: _controller.countMode,
-          // 진행 중이면 비활성, 아니면 바꾸고 저장한다.
-          onChanged: _controller.isActive
-              ? null
-              : (countMode) =>
-                    _updateSettings(() => _controller.setCountMode(countMode)),
+        // 원은 남은 높이에 맞춰 줄어들 수 있다.
+        Flexible(child: _buildCounterRing(localizations)),
+        // 간격
+        const SizedBox(height: _largeSpacing),
+        // 27배 구간 막대
+        SegmentProgressBars(
+          // 현재 절 수
+          count: _controller.count,
+          // 완료 여부
+          isCompleted: _controller.isCompleted,
         ),
-        // 자동 간격 방식일 때만 간격 칩을 보여 준다.
-        if (_controller.countMode == CountMode.auto) ...<Widget>[
-          // 간격
-          const SizedBox(height: _mediumSpacing),
-          // "절 간격"
-          SectionLabel(localizations.intervalTitle),
-          // 간격 칩
-          IntervalSelector(
-            // 현재 간격
-            intervalSeconds: _controller.intervalSeconds,
-            // 바꾸면 저장한다.
-            onChanged: _changeIntervalSeconds,
-          ),
-        ],
+        // 간격
+        const SizedBox(height: _mediumSpacing),
+        // 안내 문구
+        GuideMessage(controller: _controller),
+        // 버튼과의 간격
+        const SizedBox(height: _largeSpacing),
       ],
     );
   }
@@ -334,8 +318,6 @@ class _MainScreenState extends State<MainScreen> {
       captionText: isPreparing
           ? localizations.preparationLabel
           : localizations.counterTarget(CounterRules.targetBowCount),
-      // 탭하면 즉시 1배
-      onTap: _controller.tapCircle,
     );
   }
 
@@ -373,8 +355,8 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
-  // 시작 버튼: 완료면 회향 화면, 아니면 시작/일시정지
-  void _handlePrimaryPressed() {
+  // 시작 버튼: 완료면 회향 화면, 아니면 시작(정지 후에는 이어서)
+  void _handleStartPressed() {
     // 완료 상태면 회향 화면을 다시 연다.
     if (_controller.isCompleted) {
       // 회향 화면 열기
@@ -382,8 +364,8 @@ class _MainScreenState extends State<MainScreen> {
       // 처리 끝
       return;
     }
-    // 시작 또는 일시정지
-    _controller.toggleStartPause();
+    // 시작 또는 이어서
+    _controller.start();
   }
 
   // 회향 화면을 열고 결과에 따라 카운터를 초기화한다.
@@ -452,7 +434,7 @@ class _MainScreenState extends State<MainScreen> {
     };
   }
 
-  // 간격을 바꾸고 저장한다(간격 칩과 설정 화면이 함께 쓴다).
+  // 간격을 바꾸고 저장한다(설정 화면에서 호출).
   void _changeIntervalSeconds(int seconds) {
     // 간격을 바꾸고 설정을 저장한다.
     _updateSettings(() => _controller.setIntervalSeconds(seconds));
@@ -471,6 +453,12 @@ class _MainScreenState extends State<MainScreen> {
             counterController: _controller,
             // 간격 변경·저장
             onIntervalChanged: _changeIntervalSeconds,
+            // 종소리 변경·미리 듣기·저장
+            onBellSoundChanged: (bellSound) =>
+                _updateSettings(() => _controller.setBellSound(bellSound)),
+            // 알림 방식 변경·저장
+            onAlertModeChanged: (alertMode) =>
+                _updateSettings(() => _controller.setAlertMode(alertMode)),
             // 테마·캘린더 설정
             appSettingsController: widget.appSettingsController,
             // 캘린더 서비스

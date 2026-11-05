@@ -1,3 +1,4 @@
+import 'package:bae108_counter/widgets/ascetic_emblem.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -27,52 +28,82 @@ void main() {
     expect(settingsIcon.dx, greaterThan(historyIcon.dx));
   });
 
-  testWidgets('mainScreen_controls_hasNoDecrementButton', (tester) async {
+  testWidgets('mainScreen_layout_showsSummaryWithoutScrollOrSelectors', (
+    tester,
+  ) async {
     // 준비 및 실행: 앱을 띄운다.
     await pumpTestApp(tester);
 
-    // 검증: [−] 버튼이 없다.
+    // 검증: 방식 선택·간격 칩·알림 선택·[−] 버튼이 없고, 엠블럼과 한 줄 요약이 있다.
+    expect(find.text('직접 탭'), findsNothing);
+    expect(find.text('5초'), findsNothing);
+    expect(find.text('진동'), findsNothing);
     expect(find.byIcon(Icons.remove), findsNothing);
+    expect(find.byType(AsceticEmblem), findsOneWidget);
+    expect(find.text('절 간격'), findsOneWidget);
+    expect(find.text('10초'), findsOneWidget);
+    expect(find.text('종소리 · 중저음 종'), findsOneWidget);
+    expect(find.byType(Scrollable), findsNothing);
   });
 
-  testWidgets('counterRing_tapped_incrementsCountAndKeepsScreenOn', (
+  testWidgets('controls_idle_enablesStartAndDisablesStop', (tester) async {
+    // 준비 및 실행: 앱을 띄운다.
+    await pumpTestApp(tester);
+
+    // 검증: 시작만 누를 수 있다.
+    expect(isButtonEnabled(tester, '시작'), isTrue);
+    expect(isButtonEnabled(tester, '정지'), isFalse);
+    expect(isButtonEnabled(tester, '처음부터'), isFalse);
+  });
+
+  testWidgets('startButton_pressed_showsCountdownAndEnablesStop', (
     tester,
   ) async {
     // 준비: 앱을 띄운다.
     final testApp = await pumpTestApp(tester);
 
-    // 실행: 원을 탭한다.
-    await tapCounterRing(tester, 1);
+    // 실행: 시작을 누른다.
+    await scrollAndTap(tester, find.text('시작'));
+    await tester.pump();
 
-    // 검증: 1배가 되고 화면 켜짐이 유지된다.
-    expect(find.text('1'), findsOneWidget);
+    // 검증: 10초 준비가 나오고 시작은 막히고 정지는 눌린다.
+    expect(find.text('10'), findsOneWidget);
+    expect(find.text('준비'), findsOneWidget);
+    expect(isButtonEnabled(tester, '시작'), isFalse);
+    expect(isButtonEnabled(tester, '정지'), isTrue);
     expect(testApp.wakeLockService.isEnabled, isTrue);
+
+    // 정리: 정지해서 타이머를 멈춘다.
+    await tester.tap(find.text('정지'));
+    await tester.pump();
   });
 
-  testWidgets('countModeAuto_selected_showsIntervalChips', (tester) async {
+  testWidgets('counterRing_tapped_doesNotCount', (tester) async {
     // 준비: 앱을 띄운다.
     await pumpTestApp(tester);
 
-    // 실행: 자동 간격을 고른다.
-    await tester.tap(find.text('자동 간격'));
-    await tester.pumpAndSettle();
+    // 실행: 원을 탭한다.
+    await tester.tap(find.text('/ 108'));
+    await tester.pump();
 
-    // 검증: 간격 칩이 보인다.
-    expect(find.text('5초'), findsOneWidget);
-    expect(find.text('10초'), findsOneWidget);
-    expect(find.text('20초'), findsOneWidget);
-    expect(find.text('직접 설정'), findsOneWidget);
+    // 검증: 0배 그대로이고 시작되지 않는다.
+    expect(find.text('0'), findsOneWidget);
+    expect(isButtonEnabled(tester, '정지'), isFalse);
   });
 
-  testWidgets('resetButton_withCountedBows_asksConfirmationBeforeClearing', (
+  testWidgets('resetButton_afterStop_asksConfirmationBeforeClearing', (
     tester,
   ) async {
-    // 준비: 3배를 센다.
-    await pumpTestApp(tester);
-    await tapCounterRing(tester, 3);
+    // 준비: 5초 간격으로 시작해 1배를 센 뒤 정지한다.
+    await pumpTestApp(tester, intervalSeconds: 5);
+    await scrollAndTap(tester, find.text('시작'));
+    await advanceSeconds(tester, 15);
+    await tester.tap(find.text('정지'));
+    await tester.pump();
+    expect(find.text('1'), findsOneWidget);
 
     // 실행: 처음부터 → 확인을 누른다.
-    await scrollAndTap(tester, find.text('처음부터'));
+    await tester.tap(find.text('처음부터'));
     await tester.pumpAndSettle();
     expect(find.text('처음부터 다시 할까요?'), findsOneWidget);
     await tester.tap(find.text('확인'));
@@ -80,6 +111,51 @@ void main() {
 
     // 검증: 0배로 돌아간다.
     expect(find.text('0'), findsOneWidget);
+  });
+
+  testWidgets('summaryBar_tapped_opensSettingsScreen', (tester) async {
+    // 준비: 앱을 띄운다.
+    await pumpTestApp(tester);
+
+    // 실행: 요약 바를 누른다.
+    await tester.tap(find.text('종소리 · 중저음 종'));
+    await tester.pumpAndSettle();
+
+    // 검증: 설정 화면이 열린다.
+    expect(find.text('카운트 간격'), findsOneWidget);
+  });
+
+  testWidgets('summaryBar_settingsChanged_showsNewValues', (tester) async {
+    // 준비: 설정 화면을 연다.
+    await pumpTestApp(tester);
+    await tester.tap(find.byTooltip('설정'));
+    await tester.pumpAndSettle();
+
+    // 실행: 간격 20초, 알림 진동으로 바꾸고 돌아온다.
+    await tester.tap(find.text('20초'));
+    await tester.pumpAndSettle();
+    await scrollAndTap(tester, find.text('진동'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byType(BackButton));
+    await tester.pumpAndSettle();
+
+    // 검증: 메인 요약이 같은 값을 보여 준다.
+    expect(find.text('20초'), findsOneWidget);
+    expect(find.text('진동'), findsOneWidget);
+    expect(find.text('시작하면 10초 준비 후 20초마다 1배씩 셉니다'), findsOneWidget);
+  });
+
+  testWidgets('mainScreen_smallPhone_fitsWithoutOverflow', (tester) async {
+    // 준비: 작은 휴대폰(375x667, iPhone SE) 크기로 띄운다.
+    await pumpTestApp(tester);
+    tester.view.physicalSize = const Size(750, 1334);
+    tester.view.devicePixelRatio = 2;
+    await tester.pumpAndSettle();
+
+    // 실행 및 검증: 넘침 오류 없이 버튼까지 모두 보인다.
+    expect(tester.takeException(), isNull);
+    expect(find.text('시작'), findsOneWidget);
+    expect(find.text('처음부터'), findsOneWidget);
   });
 
   testWidgets('mainScreen_supportedLocales_showsTranslatedTitle', (
@@ -109,4 +185,19 @@ void main() {
     // 검증: 영어로 표시된다.
     expect(find.text("Today's 108 Bows"), findsOneWidget);
   });
+}
+
+// 해당 문구가 들어 있는 버튼이 눌릴 수 있는 상태인지 확인한다.
+bool isButtonEnabled(WidgetTester tester, String label) {
+  // 문구를 감싸는 가장 가까운 버튼
+  final button = tester.widget<ButtonStyleButton>(
+    find
+        .ancestor(
+          of: find.text(label),
+          matching: find.bySubtype<ButtonStyleButton>(),
+        )
+        .first,
+  );
+  // onPressed가 있으면 누를 수 있다.
+  return button.onPressed != null;
 }

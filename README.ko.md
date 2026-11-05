@@ -6,7 +6,7 @@
 
 ## Overview
 
-108배를 하는 동안 화면을 들여다보지 않고도 절 수를 셀 수 있도록 돕는 앱입니다. 큰 원을 탭하거나 5초~3분 사이의 간격으로 자동으로 1배씩 세며, 1배마다 종소리·진동·무음 중 하나로 알려 줍니다. (`lib/controllers/counter_controller.dart`, `lib/services/device_bow_feedback_service.dart`)
+108배를 하는 동안 화면을 들여다보지 않고도 절 수를 셀 수 있도록 돕는 앱입니다. 시작을 누르면 5초~3분 중 고른 간격마다 자동으로 1배씩 세며, 1배마다 종소리·진동·무음 중 하나로 알려 줍니다. (`lib/controllers/counter_controller.dart`, `lib/services/device_bow_feedback_service.dart`)
 
 108배에 도달하면 카운트가 멈추고 화면 꺼짐 방지가 풀리며, 완료 화면에서 소요 시간·1배 평균·연속 일수를 보여 줍니다. 한 줄 메모와 함께 수행을 저장할 수 있습니다. (`lib/screens/completion_screen.dart`)
 
@@ -16,22 +16,24 @@
 
 ## Key Features
 
-- **직접 탭** – 원을 탭할 때마다 1배씩 셉니다. (`lib/widgets/counter_ring.dart`, `lib/controllers/counter_controller.dart`)
-- **자동 간격** – 5초·10초·20초 프리셋 또는 5초~3분(5초 단위) 직접 설정. (`lib/widgets/interval_selector.dart`, `lib/widgets/interval_slider.dart`, `lib/controllers/counter_rules.dart`)
-- **10초 준비 카운트다운** – 자동 모드에서 0배부터 시작하면 10→1 카운트다운 뒤에 셈을 시작하고, 일시정지 후 이어서 할 때는 건너뜁니다. 자동 모드에서도 원을 탭하면 즉시 1배를 세고 간격을 다시 잽니다. (`lib/controllers/counter_controller.dart`)
-- **1배마다 알림** – 종소리(`assets/sounds/bell.mp3`, 파일이 없으면 시스템 클릭음)·진동·무음, 108배째는 길게 알립니다. (`lib/services/device_bow_feedback_service.dart`)
+- **간격 카운트** – 5초·10초·20초 프리셋 또는 5초~3분(5초 단위)을 설정 화면에서 고릅니다. (`lib/screens/settings_screen.dart`, `lib/widgets/interval_slider.dart`, `lib/controllers/counter_rules.dart`)
+- **한 화면 메인** – 메인 화면은 현재 절 간격과 알림을 한 줄로 보여 주고(누르면 설정), 스크롤 없이 한 화면에 들어옵니다. 원형 카운터는 남은 높이에 맞춰 크기가 정해집니다. (`lib/widgets/settings_summary_bar.dart`, `lib/screens/main_screen.dart`, `lib/widgets/counter_ring.dart`)
+- **시작 | 정지 | 처음부터** – 시작으로 세기 시작하고, 정지는 센 수를 유지한 채 멈추며, 처음부터는 확인 후 0으로 되돌립니다. (`lib/widgets/counter_controls.dart`, `lib/screens/main_screen.dart`)
+- **10초 준비 카운트다운** – 0배부터 시작하면 10→1 카운트다운 뒤에 셈을 시작하고, 정지 후 다시 시작할 때는 건너뜁니다. (`lib/controllers/counter_controller.dart`)
+- **1배마다 알림** – 종소리·진동·무음, 108배째는 길게 알립니다. 종소리는 설정에서 중저음 종(기본)·맑은 종·풍경·목탁 중에 고를 수 있고, 소리 파일이 없으면 시스템 클릭음으로 대신합니다. (`lib/services/device_bow_feedback_service.dart`, `assets/sounds/`)
 - **화면 켜짐 유지** – 완료하거나 처음부터를 누를 때까지 화면이 꺼지지 않습니다. (`lib/services/wake_lock_service.dart`)
 - **진행 표시** – 주황색으로 차오르다 완료 시 녹색으로 바뀌고 녹색 테두리가 생기는 바깥 링, 다음 절까지 남은 시간을 보여 주는 안쪽 링, 27배 단위 구간 바 4개. (`lib/widgets/counter_ring.dart`, `lib/widgets/segment_progress_bars.dart`)
 - **수행 기록** – 현재·최장 연속 일수, 이번 주 월~일 체크, 이번 달 수행 횟수와 누적 절 수, 최근 수행 목록. (`lib/screens/history_screen.dart`, `lib/services/practice_statistics_calculator.dart`)
-- **설정** – 카운트 간격, 배경색(팔레트 #574의 화이트·다크 그레이·라이트 그레이를 포함한 7가지), 버튼색(금빛·블루 #1976D2·딥 블루 #1565C0·그레이 #424242). (`lib/screens/settings_screen.dart`, `lib/theme/app_colors.dart`)
+- **설정** – 카운트 간격, 종소리, 배경색(팔레트 #574의 화이트·다크 그레이·라이트 그레이를 포함한 7가지), 버튼색(금빛·블루 #1976D2·딥 블루 #1565C0·그레이 #424242). (`lib/screens/settings_screen.dart`, `lib/theme/app_colors.dart`)
 - **캘린더 기록** – 켜 두면 기록을 저장할 때 선택한 기기 캘린더에 시작·종료 시각, 소요 시간, 메모가 담긴 일정을 추가합니다. (`lib/screens/completion_screen.dart`, `lib/services/device_calendar_sync_service.dart`)
+- **앱 아이콘과 엠블럼** – 금빛 바탕에 큰절하는 모습과 108을 넣은 앱 아이콘, 메인 제목 옆에는 선택한 색을 따라가는 원형 고행상 엠블럼. 아이콘을 바꾸려면 `assets/icon/app_icon.png`를 교체하고 `dart run flutter_launcher_icons`를 실행합니다. (`assets/icon/`, `flutter_launcher_icons.yaml`, `lib/widgets/ascetic_emblem.dart`)
 - **4개 언어** – 한국어·영어·일본어·중국어를 지원하며, 그 외 언어는 영어로 표시합니다. (`lib/l10n/`)
 
 ## Concepts / Domain Model
 
 ### 진행 단계(Counter phase)
 
-수행은 `idle`(대기), `preparing`(준비, 자동 모드만), `running`(진행), `paused`(일시정지), `completed`(완료) 순으로 바뀝니다. 시간은 `CounterController.tick()`으로만 흐르며, 앱에서는 100ms 타이머가 이를 부르고 테스트에서는 직접 부릅니다. (`lib/models/counter_phase.dart`, `lib/controllers/counter_controller.dart`)
+수행은 `idle`(대기), `preparing`(준비), `running`(진행), `paused`(정지), `completed`(완료) 순으로 바뀝니다. 시간은 `CounterController.tick()`으로만 흐르며, 앱에서는 100ms 타이머가 이를 부르고 테스트에서는 직접 부릅니다. (`lib/models/counter_phase.dart`, `lib/controllers/counter_controller.dart`)
 
 ### 수행 기록(Bow session)
 
@@ -69,7 +71,9 @@
 │   ├── widgets/               # 원형 카운터, 선택 위젯, 색 견본, 형식 도우미
 │   ├── theme/                 # 색 팔레트와 Material 3 테마
 │   └── l10n/                  # .arb 번역 파일과 생성된 지역화 코드
-├── assets/sounds/bell.mp3     # 종소리
+├── assets/sounds/            # 종소리(중저음·맑은 종·풍경·목탁)
+├── assets/icon/               # 앱 아이콘 원본(flutter_launcher_icons용)
+├── flutter_launcher_icons.yaml # 앱 아이콘 생성 설정
 ├── test/
 │   ├── unit/                  # 컨트롤러, 모델, 서비스 단위 테스트
 │   ├── widget/                # 화면 단위 기능 테스트
@@ -86,8 +90,8 @@
 ## How It Works
 
 1. 메인 화면이 저장된 카운터 설정을 읽어 `CounterController`를 만듭니다. (`lib/screens/main_screen.dart`)
-2. 시작을 누르거나 원을 탭하면 화면 켜짐 유지를 켜고, 실제 경과 시간을 재며 `tick()`을 부르는 100ms 타이머를 시작합니다. (`lib/controllers/counter_controller.dart`)
-3. 자동 모드에서 0배부터 시작하면 `tick()`이 먼저 10초 준비 카운트다운을 진행하고, 이후 간격이 지날 때마다 1배를 셉니다. 1배마다 선택한 알림이 울립니다. (`lib/controllers/counter_controller.dart`)
+2. 시작을 누르면 화면 켜짐 유지를 켜고, 실제 경과 시간을 재며 `tick()`을 부르는 100ms 타이머를 시작합니다. (`lib/controllers/counter_controller.dart`)
+3. 0배부터 시작하면 `tick()`이 먼저 10초 준비 카운트다운을 진행하고, 이후 간격이 지날 때마다 1배를 셉니다. 1배마다 선택한 알림이 울립니다. (`lib/controllers/counter_controller.dart`)
 4. 108배가 되면 컨트롤러가 타이머를 멈추고 종료 시각을 기록한 뒤 화면 켜짐 유지를 해제합니다. 1.5초 뒤 메인 화면이 완료 화면을 엽니다. (`lib/controllers/counter_controller.dart`, `lib/screens/main_screen.dart`)
 5. 저장하면 수행 기록을 JSON으로 `shared_preferences`에 넣고, 켜져 있으면 캘린더에 일정을 추가합니다. 그 뒤 메인 화면이 카운터를 초기화합니다. (`lib/screens/completion_screen.dart`, `lib/services/practice_record_repository.dart`)
 6. 수행 기록 화면은 모든 기록을 읽어 연속 일수, 이번 주 체크, 이번 달 합계를 계산합니다. (`lib/screens/history_screen.dart`, `lib/services/practice_statistics_calculator.dart`)

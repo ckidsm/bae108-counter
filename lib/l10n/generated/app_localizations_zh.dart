@@ -22,35 +22,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get historyTooltip => '修行记录';
 
   @override
-  String get countModeTitle => '计数方式';
-
-  @override
-  String get countModeTap => '点击';
-
-  @override
-  String get countModeAuto => '自动间隔';
-
-  @override
-  String get intervalTitle => '礼拜间隔';
-
-  @override
-  String get intervalCustom => '自定义';
-
-  @override
-  String intervalCustomSelected(String duration) {
-    return '自定义 · $duration';
-  }
-
-  @override
-  String get customIntervalSheetTitle => '自定义礼拜间隔';
-
-  @override
   String customIntervalRange(String minimum, String maximum, String step) {
     return '$minimum ~ $maximum，以$step为单位';
   }
-
-  @override
-  String get customIntervalApply => '应用';
 
   @override
   String durationSeconds(int seconds) {
@@ -86,28 +60,12 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get guideIdleTap => '点击圆圈或按开始';
-
-  @override
-  String guideIdleAuto(int seconds) {
-    return '开始后准备$seconds秒，然后开始计数';
-  }
-
-  @override
   String guidePreparing(int seconds) {
     return '请调整姿势 · $seconds秒后开始';
   }
 
   @override
-  String get guideRunningTap => '每点击一次圆圈计一拜';
-
-  @override
-  String guideRunningAuto(int seconds) {
-    return '距下一拜还有$seconds秒';
-  }
-
-  @override
-  String get guidePaused => '已暂停 · 请按继续';
+  String get guidePaused => '已停止 · 按开始继续计数';
 
   @override
   String get guideCompleted => '已完成全部108拜';
@@ -126,12 +84,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get buttonStart => '开始';
-
-  @override
-  String get buttonResume => '继续';
-
-  @override
-  String get buttonPause => '暂停';
 
   @override
   String get buttonDedication => '回向';
@@ -257,7 +209,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settingsIntervalSection => '计数间隔';
 
   @override
-  String get settingsIntervalDescription => '自动间隔模式下每计一拜的间隔';
+  String get settingsIntervalDescription => '开始后每隔此时间计一拜';
 
   @override
   String get settingsThemeSection => '颜色主题';
@@ -341,4 +293,49 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get accentGray => '灰色';
+
+  @override
+  String guideRunning(int seconds) {
+    return '距下一拜还有$seconds秒';
+  }
+
+  @override
+  String get buttonStop => '停止';
+
+  @override
+  String guideIdle(int seconds, String interval) {
+    return '开始后准备$seconds秒，然后每$interval计一拜';
+  }
+
+  @override
+  String get settingsSoundSection => '钟声';
+
+  @override
+  String get settingsSoundDescription => '提醒方式为钟声时播放的声音。点击即可试听';
+
+  @override
+  String get soundDeep => '低沉钟声';
+
+  @override
+  String get soundClear => '清脆钟声';
+
+  @override
+  String get soundChime => '风铃';
+
+  @override
+  String get soundMoktak => '木鱼';
+
+  @override
+  String get soundTempleBell => '梵钟';
+
+  @override
+  String get summaryIntervalLabel => '间隔';
+
+  @override
+  String get summaryAlertLabel => '提醒';
+
+  @override
+  String summaryBellValue(String mode, String sound) {
+    return '$mode · $sound';
+  }
 }

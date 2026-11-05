@@ -22,35 +22,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get historyTooltip => '수행 기록';
 
   @override
-  String get countModeTitle => '카운트 방식';
-
-  @override
-  String get countModeTap => '직접 탭';
-
-  @override
-  String get countModeAuto => '자동 간격';
-
-  @override
-  String get intervalTitle => '절 간격';
-
-  @override
-  String get intervalCustom => '직접 설정';
-
-  @override
-  String intervalCustomSelected(String duration) {
-    return '직접 · $duration';
-  }
-
-  @override
-  String get customIntervalSheetTitle => '절 간격 직접 설정';
-
-  @override
   String customIntervalRange(String minimum, String maximum, String step) {
     return '$minimum ~ $maximum, $step 단위';
   }
-
-  @override
-  String get customIntervalApply => '적용';
 
   @override
   String durationSeconds(int seconds) {
@@ -86,28 +60,12 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get guideIdleTap => '원을 탭하거나 시작을 누르세요';
-
-  @override
-  String guideIdleAuto(int seconds) {
-    return '시작하면 $seconds초 준비 후 셈을 시작합니다';
-  }
-
-  @override
   String guidePreparing(int seconds) {
     return '자세를 갖추세요 · $seconds초 후 시작';
   }
 
   @override
-  String get guideRunningTap => '원을 탭할 때마다 1배씩 셉니다';
-
-  @override
-  String guideRunningAuto(int seconds) {
-    return '다음 절까지 $seconds초';
-  }
-
-  @override
-  String get guidePaused => '일시정지 중 · 이어서를 누르세요';
+  String get guidePaused => '정지됨 · 시작을 누르면 이어서 셉니다';
 
   @override
   String get guideCompleted => '108배를 모두 마쳤습니다';
@@ -126,12 +84,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get buttonStart => '시작';
-
-  @override
-  String get buttonResume => '이어서';
-
-  @override
-  String get buttonPause => '일시정지';
 
   @override
   String get buttonDedication => '회향하기';
@@ -257,7 +209,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settingsIntervalSection => '카운트 간격';
 
   @override
-  String get settingsIntervalDescription => '자동 간격 방식에서 1배를 세는 간격입니다';
+  String get settingsIntervalDescription => '시작하면 이 간격마다 1배씩 셉니다';
 
   @override
   String get settingsThemeSection => '색상 테마';
@@ -344,4 +296,50 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get accentGray => '그레이';
+
+  @override
+  String guideRunning(int seconds) {
+    return '다음 절까지 $seconds초';
+  }
+
+  @override
+  String get buttonStop => '정지';
+
+  @override
+  String guideIdle(int seconds, String interval) {
+    return '시작하면 $seconds초 준비 후 $interval마다 1배씩 셉니다';
+  }
+
+  @override
+  String get settingsSoundSection => '종소리';
+
+  @override
+  String get settingsSoundDescription =>
+      '알림 방식이 종소리일 때 울리는 소리입니다. 누르면 바로 들어 볼 수 있습니다';
+
+  @override
+  String get soundDeep => '중저음 종';
+
+  @override
+  String get soundClear => '맑은 종';
+
+  @override
+  String get soundChime => '풍경';
+
+  @override
+  String get soundMoktak => '목탁';
+
+  @override
+  String get soundTempleBell => '범종';
+
+  @override
+  String get summaryIntervalLabel => '절 간격';
+
+  @override
+  String get summaryAlertLabel => '알림';
+
+  @override
+  String summaryBellValue(String mode, String sound) {
+    return '$mode · $sound';
+  }
 }

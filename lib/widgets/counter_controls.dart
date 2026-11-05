@@ -2,24 +2,28 @@ import 'package:flutter/material.dart';
 
 import '../l10n/generated/app_localizations.dart';
 import '../models/counter_phase.dart';
+import '../theme/app_colors.dart';
 
 /*────────────────────────────────────────────────────────────────────────
- Purpose  : Shows the start/pause and restart buttons below the counter.
+ Purpose  : Shows the start, stop, and restart buttons below the counter.
+ Remarks  : After completion the start button opens the dedication screen instead.
  Author   : YUNDEOKSOO                          Created : 2026-11-04
+ History  : [2026-11-05, YUNDEOKSOO] Split start/pause toggle into start and stop buttons
 ────────────────────────────────────────────────────────────────────────*/
-/// 하단의 [시작/일시정지] [처음부터] 버튼 줄.
+/// 하단의 [시작] [정지] [처음부터] 버튼 줄.
 class CounterControls extends StatelessWidget {
   /// Creates the control row.
   const CounterControls({
     super.key,
     required this.phase,
     required this.count,
-    required this.onPrimaryPressed,
+    required this.onStart,
+    required this.onStop,
     required this.onReset,
   });
 
   // 버튼 사이 간격
-  static const double _buttonSpacing = 12;
+  static const double _buttonSpacing = 10;
   // 버튼 높이
   static const double _buttonHeight = 56;
 
@@ -29,8 +33,11 @@ class CounterControls extends StatelessWidget {
   /// The number of bows counted so far.
   final int count;
 
-  /// Called when the start button is pressed.
-  final VoidCallback onPrimaryPressed;
+  /// Called when the start button is pressed (also used for "회향하기").
+  final VoidCallback onStart;
+
+  /// Called when the stop button is pressed.
+  final VoidCallback onStop;
 
   /// Called when "처음부터" is pressed.
   final VoidCallback onReset;
@@ -39,10 +46,12 @@ class CounterControls extends StatelessWidget {
   Widget build(BuildContext context) {
     // 번역 문구
     final localizations = AppLocalizations.of(context);
-    // 진행 중인지 여부(일시정지 버튼으로 표시)
+    // 준비·진행 중인지 여부
     final isActive =
         phase == CounterPhase.preparing || phase == CounterPhase.running;
-    // 두 버튼을 가로로 놓는다.
+    // 완료 여부
+    final isCompleted = phase == CounterPhase.completed;
+    // 세 버튼을 가로로 놓는다.
     return SizedBox(
       // 버튼 높이
       height: _buttonHeight,
@@ -51,16 +60,41 @@ class CounterControls extends StatelessWidget {
         // 버튼 높이를 맞춘다.
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          // 시작 버튼이 남은 폭을 차지한다.
+          // 시작 버튼(진행 중에는 비활성, 완료 후에는 회향하기)
           Expanded(
-            // 시작/이어서/일시정지/회향하기 버튼
+            // 채워진 버튼
             child: FilledButton.icon(
-              // 누르면 상위에서 처리
-              onPressed: onPrimaryPressed,
-              // 상태에 맞는 아이콘
-              icon: Icon(_primaryIconOf(isActive)),
-              // 상태에 맞는 이름
-              label: Text(_primaryLabelOf(localizations, isActive)),
+              // 진행 중에는 누를 수 없다.
+              onPressed: isActive ? null : onStart,
+              // 완료면 연꽃, 아니면 재생 아이콘
+              icon: Icon(isCompleted ? Icons.spa_outlined : Icons.play_arrow),
+              // 완료면 "회향하기", 아니면 "시작"
+              label: Text(
+                isCompleted
+                    ? localizations.buttonDedication
+                    : localizations.buttonStart,
+              ),
+            ),
+          ),
+          // 간격
+          const SizedBox(width: _buttonSpacing),
+          // 정지 버튼(진행 중에만 누를 수 있다)
+          Expanded(
+            // 채워진 버튼(빨간색)
+            child: FilledButton.icon(
+              // 진행 중일 때만 누를 수 있다.
+              onPressed: isActive ? onStop : null,
+              // 눈에 띄도록 빨간 바탕과 흰 글자
+              style: FilledButton.styleFrom(
+                // 정지 버튼 배경
+                backgroundColor: AppColors.stop,
+                // 정지 버튼 글자
+                foregroundColor: AppColors.onStop,
+              ),
+              // 정지 아이콘
+              icon: const Icon(Icons.stop),
+              // "정지"
+              label: Text(localizations.buttonStop),
             ),
           ),
           // 간격
@@ -79,33 +113,5 @@ class CounterControls extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  // 시작 버튼 아이콘을 고른다.
-  IconData _primaryIconOf(bool isActive) {
-    // 완료면 연꽃 아이콘
-    if (phase == CounterPhase.completed) {
-      // 연꽃(spa) 아이콘
-      return Icons.spa_outlined;
-    }
-    // 진행 중이면 일시정지, 아니면 재생 아이콘
-    return isActive ? Icons.pause : Icons.play_arrow;
-  }
-
-  // 시작 버튼 이름을 고른다.
-  String _primaryLabelOf(AppLocalizations localizations, bool isActive) {
-    // 단계별로 이름이 다르다.
-    return switch (phase) {
-      // 완료: 회향하기
-      CounterPhase.completed => localizations.buttonDedication,
-      // 일시정지: 이어서
-      CounterPhase.paused => localizations.buttonResume,
-      // 대기: 이미 센 절이 있으면 이어서, 아니면 시작
-      CounterPhase.idle =>
-        count > 0 ? localizations.buttonResume : localizations.buttonStart,
-      // 준비·진행 중: 일시정지
-      CounterPhase.preparing ||
-      CounterPhase.running => localizations.buttonPause,
-    };
   }
 }
