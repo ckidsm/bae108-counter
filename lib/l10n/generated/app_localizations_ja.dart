@@ -22,15 +22,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get historyTooltip => '修行記録';
 
   @override
-  String get countModeTitle => 'カウント方式';
-
-  @override
-  String get countModeTap => 'タップ';
-
-  @override
-  String get countModeAuto => '自動間隔';
-
-  @override
   String get intervalTitle => '拝の間隔';
 
   @override
@@ -86,28 +77,12 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get guideIdleTap => '円をタップするかスタートを押してください';
-
-  @override
-  String guideIdleAuto(int seconds) {
-    return 'スタート後、$seconds秒の準備ののちカウントを始めます';
-  }
-
-  @override
   String guidePreparing(int seconds) {
     return '姿勢を整えてください · $seconds秒後に開始';
   }
 
   @override
-  String get guideRunningTap => '円をタップするたびに1拝ずつ数えます';
-
-  @override
-  String guideRunningAuto(int seconds) {
-    return '次の拝まで$seconds秒';
-  }
-
-  @override
-  String get guidePaused => '一時停止中 · 再開を押してください';
+  String get guidePaused => '停止中 · スタートで続きから数えます';
 
   @override
   String get guideCompleted => '108拝をすべて終えました';
@@ -126,12 +101,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get buttonStart => 'スタート';
-
-  @override
-  String get buttonResume => '再開';
-
-  @override
-  String get buttonPause => '一時停止';
 
   @override
   String get buttonDedication => '回向する';
@@ -257,7 +226,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settingsIntervalSection => 'カウント間隔';
 
   @override
-  String get settingsIntervalDescription => '自動間隔モードで1拝を数える間隔です';
+  String get settingsIntervalDescription => 'スタート後、この間隔ごとに1拝ずつ数えます';
 
   @override
   String get settingsThemeSection => 'カラーテーマ';
@@ -343,4 +312,35 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get accentGray => 'グレー';
+
+  @override
+  String guideRunning(int seconds) {
+    return '次の拝まで$seconds秒';
+  }
+
+  @override
+  String get buttonStop => '停止';
+
+  @override
+  String guideIdle(int seconds, String interval) {
+    return 'スタート後、$seconds秒の準備ののち$intervalごとに1拝ずつ数えます';
+  }
+
+  @override
+  String get settingsSoundSection => '鐘の音';
+
+  @override
+  String get settingsSoundDescription => '通知方法が鐘の音のときに鳴る音です。タップすると試聴できます';
+
+  @override
+  String get soundDeep => '低音の鐘（標準）';
+
+  @override
+  String get soundClear => '澄んだ鐘';
+
+  @override
+  String get soundChime => '風鈴';
+
+  @override
+  String get soundMoktak => '木魚';
 }

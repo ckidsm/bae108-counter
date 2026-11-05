@@ -1,5 +1,4 @@
 import '../models/alert_mode.dart';
-import '../models/count_mode.dart';
 import '../models/counter_settings.dart';
 
 /*────────────────────────────────────────────────────────────────────────
@@ -51,8 +50,6 @@ abstract final class CounterRules {
   // 처음 설치했을 때의 기본 설정
   /// The settings used before the user changes anything.
   static const CounterSettings defaultSettings = CounterSettings(
-    // 기본은 직접 탭 방식
-    countMode: CountMode.tap,
     // 기본 간격 10초
     intervalSeconds: defaultIntervalSeconds,
     // 기본 알림은 종소리

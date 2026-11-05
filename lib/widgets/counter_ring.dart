@@ -6,7 +6,6 @@ import '../theme/app_colors.dart';
 
 /*────────────────────────────────────────────────────────────────────────
  Purpose  : Draws the circular counter with the progress ring and inner interval ring.
- Remarks  : The whole circle is tappable so the user can count without aiming.
  Author   : YUNDEOKSOO                          Created : 2026-11-04
 ────────────────────────────────────────────────────────────────────────*/
 /// 진행 링과 다음 절까지의 안쪽 링을 가진 원형 카운터.
@@ -19,7 +18,6 @@ class CounterRing extends StatelessWidget {
     required this.isCompleted,
     required this.valueText,
     required this.captionText,
-    required this.onTap,
   });
 
   // 원의 최대 지름
@@ -44,9 +42,6 @@ class CounterRing extends StatelessWidget {
   /// The caption below the number, such as "/ 108" or "준비".
   final String captionText;
 
-  /// Called when the circle is tapped.
-  final VoidCallback onTap;
-
   @override
   Widget build(BuildContext context) {
     // 화면 폭에 맞춰 원 크기를 정한다.
@@ -59,42 +54,35 @@ class CounterRing extends StatelessWidget {
         );
         // 가운데 정렬
         return Center(
-          // 원 전체를 탭할 수 있게 한다.
-          child: GestureDetector(
-            // 탭하면 1배
-            onTap: onTap,
-            // 빈 영역도 탭을 받도록 한다.
-            behavior: HitTestBehavior.opaque,
-            // 고정 크기 상자
-            child: SizedBox.square(
-              // 원 지름
-              dimension: diameter,
-              // 링 그림
-              child: CustomPaint(
-                // 링을 그리는 페인터
-                painter: _CounterRingPainter(
-                  // 전체 진행률
-                  progress: progress,
-                  // 안쪽 링 진행률
-                  innerProgress: innerProgress,
-                  // 완료 여부
-                  isCompleted: isCompleted,
-                  // 테마의 바탕 면 색(링 바탕)
-                  trackColor: Theme.of(context)
-                      .colorScheme
-                      .surfaceContainerHighest,
-                  // 안쪽 링 색(버튼색)
-                  innerRingColor: context.accentColor,
-                ),
-                // 가운데 숫자와 설명
-                child: _CounterLabel(
-                  // 큰 숫자
-                  valueText: valueText,
-                  // 아래 설명
-                  captionText: captionText,
-                  // 완료 시 녹색 글자
-                  isCompleted: isCompleted,
-                ),
+          // 고정 크기 상자
+          child: SizedBox.square(
+            // 원 지름
+            dimension: diameter,
+            // 링 그림
+            child: CustomPaint(
+              // 링을 그리는 페인터
+              painter: _CounterRingPainter(
+                // 전체 진행률
+                progress: progress,
+                // 안쪽 링 진행률
+                innerProgress: innerProgress,
+                // 완료 여부
+                isCompleted: isCompleted,
+                // 테마의 바탕 면 색(링 바탕)
+                trackColor: Theme.of(context)
+                    .colorScheme
+                    .surfaceContainerHighest,
+                // 안쪽 링 색(버튼색)
+                innerRingColor: context.accentColor,
+              ),
+              // 가운데 숫자와 설명
+              child: _CounterLabel(
+                // 큰 숫자
+                valueText: valueText,
+                // 아래 설명
+                captionText: captionText,
+                // 완료 시 녹색 글자
+                isCompleted: isCompleted,
               ),
             ),
           ),

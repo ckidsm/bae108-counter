@@ -126,24 +126,6 @@ abstract class AppLocalizations {
   /// **'수행 기록'**
   String get historyTooltip;
 
-  /// No description provided for @countModeTitle.
-  ///
-  /// In ko, this message translates to:
-  /// **'카운트 방식'**
-  String get countModeTitle;
-
-  /// No description provided for @countModeTap.
-  ///
-  /// In ko, this message translates to:
-  /// **'직접 탭'**
-  String get countModeTap;
-
-  /// No description provided for @countModeAuto.
-  ///
-  /// In ko, this message translates to:
-  /// **'자동 간격'**
-  String get countModeAuto;
-
   /// No description provided for @intervalTitle.
   ///
   /// In ko, this message translates to:
@@ -222,40 +204,16 @@ abstract class AppLocalizations {
   /// **'{start}–{end}'**
   String segmentRange(int start, int end);
 
-  /// No description provided for @guideIdleTap.
-  ///
-  /// In ko, this message translates to:
-  /// **'원을 탭하거나 시작을 누르세요'**
-  String get guideIdleTap;
-
-  /// No description provided for @guideIdleAuto.
-  ///
-  /// In ko, this message translates to:
-  /// **'시작하면 {seconds}초 준비 후 셈을 시작합니다'**
-  String guideIdleAuto(int seconds);
-
   /// No description provided for @guidePreparing.
   ///
   /// In ko, this message translates to:
   /// **'자세를 갖추세요 · {seconds}초 후 시작'**
   String guidePreparing(int seconds);
 
-  /// No description provided for @guideRunningTap.
-  ///
-  /// In ko, this message translates to:
-  /// **'원을 탭할 때마다 1배씩 셉니다'**
-  String get guideRunningTap;
-
-  /// No description provided for @guideRunningAuto.
-  ///
-  /// In ko, this message translates to:
-  /// **'다음 절까지 {seconds}초'**
-  String guideRunningAuto(int seconds);
-
   /// No description provided for @guidePaused.
   ///
   /// In ko, this message translates to:
-  /// **'일시정지 중 · 이어서를 누르세요'**
+  /// **'정지됨 · 시작을 누르면 이어서 셉니다'**
   String get guidePaused;
 
   /// No description provided for @guideCompleted.
@@ -293,18 +251,6 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'시작'**
   String get buttonStart;
-
-  /// No description provided for @buttonResume.
-  ///
-  /// In ko, this message translates to:
-  /// **'이어서'**
-  String get buttonResume;
-
-  /// No description provided for @buttonPause.
-  ///
-  /// In ko, this message translates to:
-  /// **'일시정지'**
-  String get buttonPause;
 
   /// No description provided for @buttonDedication.
   ///
@@ -531,7 +477,7 @@ abstract class AppLocalizations {
   /// No description provided for @settingsIntervalDescription.
   ///
   /// In ko, this message translates to:
-  /// **'자동 간격 방식에서 1배를 세는 간격입니다'**
+  /// **'시작하면 이 간격마다 1배씩 셉니다'**
   String get settingsIntervalDescription;
 
   /// No description provided for @settingsThemeSection.
@@ -695,6 +641,60 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'그레이'**
   String get accentGray;
+
+  /// No description provided for @guideRunning.
+  ///
+  /// In ko, this message translates to:
+  /// **'다음 절까지 {seconds}초'**
+  String guideRunning(int seconds);
+
+  /// No description provided for @buttonStop.
+  ///
+  /// In ko, this message translates to:
+  /// **'정지'**
+  String get buttonStop;
+
+  /// No description provided for @guideIdle.
+  ///
+  /// In ko, this message translates to:
+  /// **'시작하면 {seconds}초 준비 후 {interval}마다 1배씩 셉니다'**
+  String guideIdle(int seconds, String interval);
+
+  /// No description provided for @settingsSoundSection.
+  ///
+  /// In ko, this message translates to:
+  /// **'종소리'**
+  String get settingsSoundSection;
+
+  /// No description provided for @settingsSoundDescription.
+  ///
+  /// In ko, this message translates to:
+  /// **'알림 방식이 종소리일 때 울리는 소리입니다. 누르면 바로 들어 볼 수 있습니다'**
+  String get settingsSoundDescription;
+
+  /// No description provided for @soundDeep.
+  ///
+  /// In ko, this message translates to:
+  /// **'중저음 종 (기본)'**
+  String get soundDeep;
+
+  /// No description provided for @soundClear.
+  ///
+  /// In ko, this message translates to:
+  /// **'맑은 종'**
+  String get soundClear;
+
+  /// No description provided for @soundChime.
+  ///
+  /// In ko, this message translates to:
+  /// **'풍경'**
+  String get soundChime;
+
+  /// No description provided for @soundMoktak.
+  ///
+  /// In ko, this message translates to:
+  /// **'목탁'**
+  String get soundMoktak;
 }
 
 class _AppLocalizationsDelegate

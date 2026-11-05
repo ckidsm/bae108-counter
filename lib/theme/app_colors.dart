@@ -16,6 +16,14 @@ abstract final class AppColors {
   // 완료 링 색(녹색)
   /// The completed ring color.
   static const Color completed = Color(0xFF5FB878);
+
+  // 정지 버튼 배경(빨간색)
+  /// The stop button background.
+  static const Color stop = Color(0xFFC0473B);
+
+  // 정지 버튼 글자(흰색)
+  /// The stop button text and icon color.
+  static const Color onStop = Color(0xFFFFFFFF);
 }
 
 /*────────────────────────────────────────────────────────────────────────

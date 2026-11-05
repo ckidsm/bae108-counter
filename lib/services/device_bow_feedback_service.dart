@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:vibration/vibration.dart';
 
 import '../models/alert_mode.dart';
+import '../models/bell_sound.dart';
 import 'bow_feedback_service.dart';
 
 /*────────────────────────────────────────────────────────────────────────
@@ -14,13 +15,32 @@ import 'bow_feedback_service.dart';
 ────────────────────────────────────────────────────────────────────────*/
 /// 기기 알림에 쓰는 리소스 경로와 시간 값.
 abstract final class FeedbackSettings {
-  // rootBundle에서 확인할 종소리 파일의 전체 에셋 경로
-  /// The full asset key of the bell sound.
-  static const String bellAssetKey = 'assets/sounds/bell.mp3';
+  // 에셋 폴더 접두어(audioplayers는 이 아래 상대 경로를 받는다)
+  /// The prefix audioplayers adds in front of [AssetSource] paths.
+  static const String assetPrefix = 'assets/';
 
-  // audioplayers의 AssetSource는 'assets/' 아래 상대 경로를 받는다.
-  /// The bell path relative to the `assets/` folder, as audioplayers expects.
-  static const String bellAssetSourcePath = 'sounds/bell.mp3';
+  // 짧은 소리(목탁)를 108배째에 반복할 때의 간격
+  /// The gap between strikes of a short sound for the final bow.
+  static const Duration finalShortSoundGap = Duration(milliseconds: 450);
+
+  /*──────────────────────────────────────────────────────────────────────
+   Purpose  : Returns the bundled file of a bell sound, relative to assets/.
+   Author   : YUNDEOKSOO                        Created : 2026-11-05
+  ──────────────────────────────────────────────────────────────────────*/
+  /// Returns the path of [bellSound] relative to the `assets/` folder.
+  static String sourcePathOf(BellSound bellSound) {
+    // 소리별 파일
+    return switch (bellSound) {
+      // 중저음 종(처음부터 있던 파일)
+      BellSound.deep => 'sounds/bell.mp3',
+      // 맑은 종
+      BellSound.clear => 'sounds/bell_clear.mp3',
+      // 풍경
+      BellSound.chime => 'sounds/chime.mp3',
+      // 목탁
+      BellSound.moktak => 'sounds/moktak.mp3',
+    };
+  }
 
   // 108배째 종소리를 울리는 횟수
   /// How many times the bell rings for the final bow.
@@ -67,12 +87,14 @@ final class DeviceBowFeedbackService implements BowFeedbackService {
   // 종소리를 재생할 플레이어
   final AudioPlayer _audioPlayer;
 
-  // 종소리 파일 존재 여부를 한 번만 확인하도록 결과를 보관한다.
-  Future<bool>? _bellAvailability;
+  // 소리 파일마다 존재 여부를 한 번만 확인하도록 결과를 보관한다.
+  final Map<BellSound, Future<bool>> _bellAvailability =
+      <BellSound, Future<bool>>{};
 
   @override
   Future<void> notifyBow(
     AlertMode alertMode, {
+    required BellSound bellSound,
     required bool isFinalBow,
   }) async {
     // 선택된 알림 방식에 따라 처리를 나눈다.
@@ -80,7 +102,7 @@ final class DeviceBowFeedbackService implements BowFeedbackService {
       // 종소리 방식
       case AlertMode.bell:
         // 종소리(또는 대체 클릭음)를 울린다.
-        await _playBell(isFinalBow: isFinalBow);
+        await _playBell(bellSound, isFinalBow: isFinalBow);
       // 진동 방식
       case AlertMode.vibration:
         // 진동을 울린다.
@@ -93,6 +115,12 @@ final class DeviceBowFeedbackService implements BowFeedbackService {
   }
 
   @override
+  Future<void> previewBell(BellSound bellSound) {
+    // 한 번만 울린다.
+    return _playBell(bellSound, isFinalBow: false);
+  }
+
+  @override
   Future<void> dispose() async {
     // 오디오 플레이어가 잡고 있는 네이티브 자원을 해제한다.
     await _audioPlayer.dispose();
@@ -102,9 +130,17 @@ final class DeviceBowFeedbackService implements BowFeedbackService {
    Purpose  : Rings the bell, or the system click when the bell asset is missing.
    Author   : YUNDEOKSOO                        Created : 2026-11-04
   ──────────────────────────────────────────────────────────────────────*/
-  Future<void> _playBell({required bool isFinalBow}) async {
-    // 종소리 파일이 앱에 포함되어 있는지 확인한다(처음 한 번만 실제로 확인).
-    final isBellAvailable = await (_bellAvailability ??= _checkBellAsset());
+  Future<void> _playBell(
+    BellSound bellSound, {
+    required bool isFinalBow,
+  }) async {
+    // 선택한 소리의 파일 경로(assets/ 기준)
+    final sourcePath = FeedbackSettings.sourcePathOf(bellSound);
+    // 소리 파일이 앱에 포함되어 있는지 확인한다(소리마다 처음 한 번만 실제로 확인).
+    final isBellAvailable = await _bellAvailability.putIfAbsent(
+      bellSound,
+      () => _checkBellAsset(FeedbackSettings.assetPrefix + sourcePath),
+    );
     // 종소리 파일이 없으면 시스템 클릭음으로 대신한다.
     if (!isBellAvailable) {
       // 클릭음을 울린다(108배째는 여러 번).
@@ -118,15 +154,17 @@ final class DeviceBowFeedbackService implements BowFeedbackService {
     for (var strikeIndex = 0; strikeIndex < repeatCount; strikeIndex++) {
       // 두 번째 타종부터는 앞 소리가 울릴 시간을 둔다.
       if (strikeIndex > 0) {
-        // 타종 사이 간격만큼 기다린다.
-        await Future<void>.delayed(FeedbackSettings.finalBellGap);
+        // 타종 사이 간격만큼 기다린다(짧은 목탁은 더 촘촘히).
+        await Future<void>.delayed(
+          bellSound == BellSound.moktak
+              ? FeedbackSettings.finalShortSoundGap
+              : FeedbackSettings.finalBellGap,
+        );
       }
       // 앞 소리가 남아 있으면 멈추고 처음부터 다시 친다.
       await _audioPlayer.stop();
       // 종소리를 재생한다.
-      await _audioPlayer.play(
-        AssetSource(FeedbackSettings.bellAssetSourcePath),
-      );
+      await _audioPlayer.play(AssetSource(sourcePath));
     }
   }
 
@@ -134,16 +172,16 @@ final class DeviceBowFeedbackService implements BowFeedbackService {
    Purpose  : Checks whether the bell asset is bundled with the app.
    Author   : YUNDEOKSOO                        Created : 2026-11-04
   ──────────────────────────────────────────────────────────────────────*/
-  Future<bool> _checkBellAsset() async {
+  Future<bool> _checkBellAsset(String assetKey) async {
     // 에셋을 읽어 보고 성공하면 파일이 있는 것으로 본다.
     try {
-      // 종소리 에셋을 읽는다.
-      await rootBundle.load(FeedbackSettings.bellAssetKey);
+      // 소리 에셋을 읽는다.
+      await rootBundle.load(assetKey);
       // 읽기에 성공했으니 종소리를 쓸 수 있다.
       return true;
     } on FlutterError catch (error) {
       // 파일이 없다는 사실을 남기고 클릭음으로 대신하도록 false를 돌려준다.
-      debugPrint('[BowFeedback] 종소리 파일 없음, 시스템 클릭음 사용: $error');
+      debugPrint('[BowFeedback] 소리 파일 없음 $assetKey, 시스템 클릭음 사용: $error');
       // 종소리를 쓸 수 없다.
       return false;
     }

@@ -5,8 +5,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
 import '../models/alert_mode.dart';
+import '../models/bell_sound.dart';
 import '../models/bow_session.dart';
-import '../models/count_mode.dart';
 import '../models/counter_phase.dart';
 import '../models/counter_settings.dart';
 import '../services/bow_feedback_service.dart';
@@ -14,12 +14,12 @@ import '../services/wake_lock_service.dart';
 import 'counter_rules.dart';
 
 /*────────────────────────────────────────────────────────────────────────
- Purpose  : Drives the 108-bow count, preparation countdown, and automatic interval.
+ Purpose  : Counts 108 bows automatically at a set interval after a preparation countdown.
  Remarks  : Time only advances through tick(), so tests can disable the internal
             timer and call tick() directly with a chosen elapsed duration.
  Author   : YUNDEOKSOO                          Created : 2026-11-04
 ────────────────────────────────────────────────────────────────────────*/
-/// 108배 카운트, 준비 카운트다운, 자동 간격을 관리하는 컨트롤러.
+/// 시작하면 준비 카운트다운 뒤 설정한 초 간격으로 108배를 자동으로 세는 컨트롤러.
 class CounterController extends ChangeNotifier {
   /// Creates a controller.
   ///
@@ -30,11 +30,11 @@ class CounterController extends ChangeNotifier {
     CounterSettings settings = CounterRules.defaultSettings,
     DateTime Function()? now,
     this._isTimerEnabled = true,
-  }) : _countMode = settings.countMode,
-       _intervalSeconds = CounterRules.normalizeIntervalSeconds(
+  }) : _intervalSeconds = CounterRules.normalizeIntervalSeconds(
          settings.intervalSeconds,
        ),
        _alertMode = settings.alertMode,
+       _bellSound = settings.bellSound,
        _now = now ?? clock.now;
 
   // 1배마다 소리·진동을 내는 서비스
@@ -53,19 +53,19 @@ class CounterController extends ChangeNotifier {
 
   // 지금까지 센 절 수
   int _count = 0;
-  // 카운트 방식
-  CountMode _countMode;
   // 자동 간격(초)
   int _intervalSeconds;
   // 알림 방식
   AlertMode _alertMode;
+  // 종소리 종류
+  BellSound _bellSound;
   // 진행 단계
   CounterPhase _phase = CounterPhase.idle;
   // 준비 카운트다운에서 흐른 시간
   Duration _preparationElapsed = Duration.zero;
   // 마지막 절 이후 흐른 시간(자동 간격용)
   Duration _intervalElapsed = Duration.zero;
-  // 일시정지·준비 시간을 뺀 실제 수행 시간
+  // 정지·준비 시간을 뺀 실제 수행 시간
   Duration _activeElapsed = Duration.zero;
   // 첫 절을 세기 시작한 시각
   DateTime? _startedAt;
@@ -77,14 +77,14 @@ class CounterController extends ChangeNotifier {
   /// The number of bows counted so far.
   int get count => _count;
 
-  /// The current counting mode.
-  CountMode get countMode => _countMode;
-
   /// The automatic interval between bows, in seconds.
   int get intervalSeconds => _intervalSeconds;
 
   /// The feedback played for each bow.
   AlertMode get alertMode => _alertMode;
+
+  /// The sound played when [alertMode] is bell.
+  BellSound get bellSound => _bellSound;
 
   /// The current lifecycle phase.
   CounterPhase get phase => _phase;
@@ -130,7 +130,7 @@ class CounterController extends ChangeNotifier {
   /// The progress of the inner ring from 0.0 to 1.0.
   ///
   /// Shows the preparation countdown while preparing and the time to the next
-  /// bow while counting automatically; otherwise it is empty.
+  /// bow while counting or stopped; otherwise it is empty.
   double get innerRingProgress {
     // 준비 중에는 준비 시간 진행률을 보여 준다.
     if (_phase == CounterPhase.preparing) {
@@ -138,12 +138,11 @@ class CounterController extends ChangeNotifier {
       return _preparationElapsed.inMilliseconds /
           _preparationDuration.inMilliseconds;
     }
-    // 자동 모드에서 절을 세는 중이거나 멈춘 상태면 간격 진행률을 보여 준다.
-    final isAutoCounting =
-        _countMode == CountMode.auto &&
-        (_phase == CounterPhase.running || _phase == CounterPhase.paused);
+    // 절을 세는 중이거나 정지한 상태면 간격 진행률을 보여 준다.
+    final isCounting =
+        _phase == CounterPhase.running || _phase == CounterPhase.paused;
     // 그 외에는 안쪽 링을 비운다.
-    if (!isAutoCounting) {
+    if (!isCounting) {
       // 비어 있는 링
       return 0;
     }
@@ -160,12 +159,12 @@ class CounterController extends ChangeNotifier {
 
   /// The current options as a settings object for persistence.
   CounterSettings get settings => CounterSettings(
-    // 카운트 방식
-    countMode: _countMode,
     // 자동 간격
     intervalSeconds: _intervalSeconds,
     // 알림 방식
     alertMode: _alertMode,
+    // 종소리 종류
+    bellSound: _bellSound,
   );
 
   /*──────────────────────────────────────────────────────────────────────
@@ -191,22 +190,22 @@ class CounterController extends ChangeNotifier {
   }
 
   /*──────────────────────────────────────────────────────────────────────
-   Purpose  : Starts a new practice or resumes a paused one.
-   Remarks  : The preparation countdown runs only in auto mode at zero bows.
+   Purpose  : Starts a new practice or resumes a stopped one.
+   Remarks  : The preparation countdown runs only when starting from zero bows.
    Author   : YUNDEOKSOO                        Created : 2026-11-04
   ──────────────────────────────────────────────────────────────────────*/
-  /// Starts counting, or resumes after a pause.
+  /// Starts counting, or resumes after [stop].
   ///
-  /// In auto mode at zero bows a preparation countdown runs first; resuming
-  /// with bows already counted skips it.
+  /// At zero bows a preparation countdown runs first; resuming with bows
+  /// already counted skips it.
   void start() {
     // 이미 진행 중이거나 끝났으면 무시한다.
     if (isActive || isCompleted) {
       // 바꿀 상태가 없다.
       return;
     }
-    // 자동 모드에서 0배부터 시작하면 준비 카운트다운을 먼저 한다.
-    if (_countMode == CountMode.auto && _count == 0) {
+    // 0배부터 시작하면 준비 카운트다운을 먼저 한다.
+    if (_count == 0) {
       // 준비 단계로 들어간다.
       _phase = CounterPhase.preparing;
       // 준비 시간을 처음부터 잰다.
@@ -224,63 +223,21 @@ class CounterController extends ChangeNotifier {
   }
 
   /*──────────────────────────────────────────────────────────────────────
-   Purpose  : Pauses the preparation countdown or counting.
+   Purpose  : Stops the preparation countdown or counting while keeping the count.
    Remarks  : Keeps the wake lock because the practice is not finished.
    Author   : YUNDEOKSOO                        Created : 2026-11-04
   ──────────────────────────────────────────────────────────────────────*/
-  /// Pauses the practice. The screen stays on until completion or reset.
-  void pause() {
+  /// Stops counting and keeps the count. The screen stays on until completion or reset.
+  void stop() {
     // 진행 중이 아니면 멈출 것이 없다.
     if (!isActive) {
       // 바꿀 상태가 없다.
       return;
     }
-    // 일시정지 단계로 바꾼다.
+    // 정지 단계로 바꾼다.
     _phase = CounterPhase.paused;
     // 타이머를 멈춘다.
     _stopTimer();
-    // 화면을 다시 그리도록 알린다.
-    notifyListeners();
-  }
-
-  /*──────────────────────────────────────────────────────────────────────
-   Purpose  : Toggles between start/resume and pause.
-   Author   : YUNDEOKSOO                        Created : 2026-11-04
-  ──────────────────────────────────────────────────────────────────────*/
-  /// Pauses when active, otherwise starts or resumes.
-  void toggleStartPause() {
-    // 진행 중이면 멈추고, 아니면 시작한다.
-    isActive ? pause() : start();
-  }
-
-  /*──────────────────────────────────────────────────────────────────────
-   Purpose  : Counts one bow immediately when the circle is tapped.
-   Remarks  : Skips any preparation and restarts the automatic interval.
-   Author   : YUNDEOKSOO                        Created : 2026-11-04
-  ──────────────────────────────────────────────────────────────────────*/
-  /// Counts one bow now and restarts the automatic interval.
-  void tapCircle() {
-    // 이미 108배를 마쳤으면 더 세지 않는다.
-    if (isCompleted) {
-      // 바꿀 상태가 없다.
-      return;
-    }
-    // 진행 중이 아니었다면(대기·일시정지) 바로 세는 상태로 시작한다.
-    if (!isActive) {
-      // 화면을 켜 둔다.
-      _enableWakeLock();
-      // 타이머를 시작한다.
-      _startTimer();
-    }
-    // 준비 중이었더라도 탭하면 준비를 건너뛰고 세기 시작한다.
-    if (_phase != CounterPhase.running) {
-      // 세는 단계로 들어간다.
-      _enterRunning();
-    }
-    // 다음 자동 절까지의 시간을 처음부터 다시 잰다.
-    _intervalElapsed = Duration.zero;
-    // 1배를 센다.
-    _countBow();
     // 화면을 다시 그리도록 알린다.
     notifyListeners();
   }
@@ -309,25 +266,6 @@ class CounterController extends ChangeNotifier {
     _endedAt = null;
     // 화면 켜짐 유지를 해제한다.
     _disableWakeLock();
-    // 화면을 다시 그리도록 알린다.
-    notifyListeners();
-  }
-
-  /*──────────────────────────────────────────────────────────────────────
-   Purpose  : Changes the counting mode while the practice is not advancing.
-   Author   : YUNDEOKSOO                        Created : 2026-11-04
-  ──────────────────────────────────────────────────────────────────────*/
-  /// Changes the counting mode. Ignored while preparing or counting.
-  void setCountMode(CountMode countMode) {
-    // 진행 중이거나 같은 값이면 바꾸지 않는다.
-    if (isActive || countMode == _countMode) {
-      // 바꿀 상태가 없다.
-      return;
-    }
-    // 카운트 방식을 바꾼다.
-    _countMode = countMode;
-    // 이전 방식에서 남은 간격 시간을 지운다.
-    _intervalElapsed = Duration.zero;
     // 화면을 다시 그리도록 알린다.
     notifyListeners();
   }
@@ -366,6 +304,25 @@ class CounterController extends ChangeNotifier {
     }
     // 알림 방식을 바꾼다.
     _alertMode = alertMode;
+    // 화면을 다시 그리도록 알린다.
+    notifyListeners();
+  }
+
+  /*──────────────────────────────────────────────────────────────────────
+   Purpose  : Changes the bell sound and plays it once as a preview.
+   Author   : YUNDEOKSOO                        Created : 2026-11-05
+  ──────────────────────────────────────────────────────────────────────*/
+  /// Changes the bell sound to [bellSound] and plays it once.
+  void setBellSound(BellSound bellSound) {
+    // 고른 소리를 바로 들려준다(같은 소리를 다시 눌러도 들려준다).
+    unawaited(_previewBell(bellSound));
+    // 같은 값이면 상태는 바꾸지 않는다.
+    if (bellSound == _bellSound) {
+      // 바꿀 상태가 없다.
+      return;
+    }
+    // 종소리를 바꾼다.
+    _bellSound = bellSound;
     // 화면을 다시 그리도록 알린다.
     notifyListeners();
   }
@@ -428,15 +385,10 @@ class CounterController extends ChangeNotifier {
     _advanceRunning(overflow);
   }
 
-  // 수행 시간을 늘리고, 자동 모드면 간격이 지날 때마다 1배를 센다.
+  // 수행 시간을 늘리고, 간격이 지날 때마다 1배를 센다.
   void _advanceRunning(Duration elapsed) {
     // 실제 수행 시간을 늘린다.
     _activeElapsed += elapsed;
-    // 직접 탭 모드는 시간으로 절을 세지 않는다.
-    if (_countMode != CountMode.auto) {
-      // 시간만 기록
-      return;
-    }
     // 간격 시간에 흐른 시간을 더한다.
     _intervalElapsed += elapsed;
     // 간격이 지날 때마다 1배를 센다(긴 지연 시 여러 배를 놓치지 않도록 반복).
@@ -493,10 +445,26 @@ class CounterController extends ChangeNotifier {
     // 기기에서 소리·진동 호출이 실패할 수 있다.
     try {
       // 선택된 방식으로 알린다.
-      await _feedbackService.notifyBow(_alertMode, isFinalBow: isFinalBow);
+      await _feedbackService.notifyBow(
+        _alertMode,
+        bellSound: _bellSound,
+        isFinalBow: isFinalBow,
+      );
     } on PlatformException catch (error) {
       // 실패한 작업과 절 수를 남긴다.
       debugPrint('[CounterController] $_count배 알림 실패: $error');
+    }
+  }
+
+  // 미리 듣기를 재생하고, 기기 오류가 나도 설정 변경은 계속되도록 기록만 남긴다.
+  Future<void> _previewBell(BellSound bellSound) async {
+    // 기기에서 소리 재생이 실패할 수 있다.
+    try {
+      // 한 번 울린다.
+      await _feedbackService.previewBell(bellSound);
+    } on PlatformException catch (error) {
+      // 실패한 소리를 남긴다.
+      debugPrint('[CounterController] ${bellSound.name} 미리 듣기 실패: $error');
     }
   }
 

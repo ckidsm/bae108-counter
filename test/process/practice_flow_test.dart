@@ -7,48 +7,46 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../support/test_app.dart';
 
-// 108배째 이후 회향 화면이 열리기까지 기다리는 시간(앱의 1.5초 지연보다 길게)
-const Duration _completionScreenWait = Duration(milliseconds: 1600);
+// 테스트에서 고르는 절 간격(초)
+const int _intervalSeconds = 5;
 
-// 화면이 바뀌지 않는 1초를 진행한다(자동 모드 타이머 진행용).
-Future<void> advanceSeconds(WidgetTester tester, int seconds) async {
-  // 1초씩 진행해 매초 화면을 그린다.
-  for (var secondIndex = 0; secondIndex < seconds; secondIndex++) {
-    // 1초 진행
-    await tester.pump(const Duration(seconds: 1));
+// 5초씩 [stepCount]번 진행한다(긴 수행을 빠르게 진행하기 위함).
+Future<void> advanceIntervals(WidgetTester tester, int stepCount) async {
+  // 정해진 횟수만큼 간격 하나씩 진행한다.
+  for (var stepIndex = 0; stepIndex < stepCount; stepIndex++) {
+    // 간격 하나 진행
+    await tester.pump(const Duration(seconds: _intervalSeconds));
   }
 }
 
-// 108배를 탭으로 마치고 회향 화면이 열릴 때까지 기다린다.
-Future<void> completePracticeByTapping(WidgetTester tester) async {
-  // 108번 탭한다.
-  await tapCounterRing(tester, CounterRules.targetBowCount);
-  // 녹색 완료 링을 보여 주는 동안 기다린다.
-  await tester.pump(_completionScreenWait);
-  // 화면 전환을 마친다.
-  await tester.pumpAndSettle();
-}
-
 void main() {
-  testWidgets('tapPractice_fullFlow_savesRecordAndShowsItInHistory', (
+  testWidgets('intervalPractice_fullFlow_savesRecordAndShowsItInHistory', (
     tester,
   ) async {
-    // 준비: 앱을 띄운다.
+    // 준비: 앱을 띄우고 5초 간격으로 시작한다.
     final testApp = await pumpTestApp(tester);
+    await scrollAndTap(tester, find.text('5초'));
+    await tester.pumpAndSettle();
+    await scrollAndTap(tester, find.text('시작'));
 
-    // 실행 1: 107배까지 탭하면 아직 진행 중이다.
-    await tapCounterRing(tester, CounterRules.targetBowCount - 1);
+    // 실행 1: 준비 10초 뒤 107배까지 세면 아직 진행 중이다.
+    await advanceSeconds(tester, CounterRules.preparationSeconds);
+    await advanceIntervals(tester, CounterRules.targetBowCount - 1);
     expect(find.text('107'), findsOneWidget);
     expect(testApp.wakeLockService.isEnabled, isTrue);
 
-    // 실행 2: 108배째를 탭하면 완료되고 화면 켜짐이 해제된다.
-    await tapCounterRing(tester, 1);
+    // 실행 2: 간격 하나 더 지나면 108배로 완료되고 화면 켜짐이 해제된다.
+    await advanceIntervals(tester, 1);
     expect(find.text('108배를 모두 마쳤습니다'), findsOneWidget);
     expect(testApp.wakeLockService.isEnabled, isFalse);
     expect(testApp.feedbackService.calls.last.isFinalBow, isTrue);
+    expect(
+      testApp.feedbackService.calls,
+      hasLength(CounterRules.targetBowCount),
+    );
 
     // 실행 3: 잠시 뒤 회향 화면이 열리고, 메모를 써서 저장한다.
-    await tester.pump(_completionScreenWait);
+    await tester.pump(const Duration(seconds: 2));
     await tester.pumpAndSettle();
     expect(find.text('108배 회향'), findsOneWidget);
     await tester.enterText(find.byType(TextField), '마음이 고요했다');
@@ -63,8 +61,7 @@ void main() {
     await tester.tap(find.byTooltip('수행 기록'));
     await tester.pumpAndSettle();
 
-    // 검증 2: 연속 1일, 이번 달 1회·108절, 메모가 보인다.
-    expect(find.text('수행 기록'), findsOneWidget);
+    // 검증 2: 이번 달 1회·108절, 연속 1일, 메모가 보인다.
     expect(find.text('1회'), findsOneWidget);
     expect(find.text('108절'), findsOneWidget);
     expect(find.text('1일'), findsNWidgets(2));
@@ -72,12 +69,12 @@ void main() {
     expect(testApp.repository.loadSessions(), hasLength(1));
   });
 
-  testWidgets('autoPractice_countdownPauseResumeReset_flow', (tester) async {
-    // 준비: 자동 간격 5초를 고른다.
+  testWidgets('startStopReset_flow_keepsCountOnStopAndClearsOnReset', (
+    tester,
+  ) async {
+    // 준비: 5초 간격을 고른다.
     final testApp = await pumpTestApp(tester);
-    await tester.tap(find.text('자동 간격'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('5초'));
+    await scrollAndTap(tester, find.text('5초'));
     await tester.pumpAndSettle();
 
     // 실행 1: 시작하면 10초 준비 카운트다운이 나온다.
@@ -91,33 +88,27 @@ void main() {
     // 실행 2: 준비가 끝나면 0배부터 세고, 5초 뒤 1배가 된다.
     await advanceSeconds(tester, CounterRules.preparationSeconds - 1);
     expect(find.text('준비'), findsNothing);
-    expect(find.text('0'), findsOneWidget);
     expect(find.text('다음 절까지 5초'), findsOneWidget);
-    await advanceSeconds(tester, 5);
+    await advanceIntervals(tester, 1);
     expect(find.text('1'), findsOneWidget);
-    expect(testApp.feedbackService.calls, hasLength(1));
 
-    // 실행 3: 일시정지하면 시간이 흘러도 세지 않는다.
-    await tester.tap(find.text('일시정지'));
+    // 실행 3: 정지하면 시간이 흘러도 1배에서 멈춘다.
+    await tester.tap(find.text('정지'));
     await tester.pump();
     await advanceSeconds(tester, 20);
     expect(find.text('1'), findsOneWidget);
+    expect(find.text('정지됨 · 시작을 누르면 이어서 셉니다'), findsOneWidget);
     expect(testApp.wakeLockService.isEnabled, isTrue);
 
-    // 실행 4: 이어서 하면 준비 없이 5초 뒤 2배가 된다.
-    await tester.tap(find.text('이어서'));
+    // 실행 4: 다시 시작하면 준비 없이 이어서 5초 뒤 2배가 된다.
+    await tester.tap(find.text('시작'));
     await tester.pump();
     expect(find.text('준비'), findsNothing);
-    await advanceSeconds(tester, 5);
+    await advanceIntervals(tester, 1);
     expect(find.text('2'), findsOneWidget);
 
-    // 실행 5: 원을 탭하면 즉시 3배가 되고 간격이 다시 시작된다.
-    await tapCounterRing(tester, 1);
-    expect(find.text('3'), findsOneWidget);
-    expect(find.text('다음 절까지 5초'), findsOneWidget);
-
-    // 실행 6: 일시정지 후 처음부터를 확인하면 0배로 돌아간다.
-    await tester.tap(find.text('일시정지'));
+    // 실행 5: 정지 후 처음부터를 확인하면 0배로 돌아간다.
+    await tester.tap(find.text('정지'));
     await tester.pump();
     await tester.tap(find.text('처음부터'));
     await tester.pumpAndSettle();
@@ -126,7 +117,6 @@ void main() {
 
     // 검증: 초기화되고 화면 켜짐이 해제된다.
     expect(find.text('0'), findsOneWidget);
-    expect(find.text('시작'), findsOneWidget);
     expect(testApp.wakeLockService.isEnabled, isFalse);
   });
 
@@ -139,7 +129,7 @@ void main() {
     await tester.pumpAndSettle();
 
     // 실행 1: 네이비 배경·딥 블루 버튼색을 고르고 캘린더 기록을 켠다.
-    await tester.tap(find.text('네이비'));
+    await scrollAndTap(tester, find.text('네이비'));
     await tester.pumpAndSettle();
     await scrollAndTap(tester, find.text('딥 블루'));
     await tester.pumpAndSettle();
@@ -151,7 +141,7 @@ void main() {
     // 실행 2: 메인으로 돌아와 108배를 마치고 저장한다.
     await tester.tap(find.byType(BackButton));
     await tester.pumpAndSettle();
-    await completePracticeByTapping(tester);
+    await runPracticeToCompletion(tester);
     await tester.tap(find.text('기록 저장'));
     await tester.pumpAndSettle();
 

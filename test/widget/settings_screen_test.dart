@@ -1,6 +1,7 @@
 import 'package:bae108_counter/controllers/counter_rules.dart';
 import 'package:bae108_counter/models/accent_preset.dart';
 import 'package:bae108_counter/models/background_preset.dart';
+import 'package:bae108_counter/models/bell_sound.dart';
 import 'package:bae108_counter/models/calendar_target.dart';
 import 'package:bae108_counter/services/calendar_sync_service.dart';
 import 'package:bae108_counter/theme/app_colors.dart';
@@ -36,17 +37,17 @@ void main() {
         .scaffoldBackgroundColor;
   }
 
-  testWidgets('settingsScreen_opened_showsThreeSections', (tester) async {
+  testWidgets('settingsScreen_opened_showsAllSections', (tester) async {
     // 준비 및 실행: 설정 화면을 연다.
     await openSettings(tester);
 
     // 검증: 간격·테마·캘린더 항목이 보인다.
     expect(find.text('카운트 간격'), findsOneWidget);
-    expect(find.text('색상 테마'), findsOneWidget);
-    expect(find.text('배경색'), findsOneWidget);
-    expect(find.text('버튼색'), findsOneWidget);
-    expect(find.text('캘린더 기록'), findsOneWidget);
     expect(find.byType(Slider), findsOneWidget);
+    for (final title in <String>['종소리', '색상 테마', '배경색', '버튼색', '캘린더 기록']) {
+      await scrollTo(tester, find.text(title));
+      expect(find.text(title), findsOneWidget);
+    }
   });
 
   testWidgets('themeTile_navyTapped_changesBackgroundAndSaves', (tester) async {
@@ -54,7 +55,7 @@ void main() {
     final testApp = await openSettings(tester);
 
     // 실행: 네이비를 고른다.
-    await tester.tap(find.text('네이비'));
+    await scrollAndTap(tester, find.text('네이비'));
     await tester.pumpAndSettle();
 
     // 검증: 배경색이 바뀌고 저장된다.
@@ -96,7 +97,7 @@ void main() {
     await openSettings(tester);
 
     // 실행: 배경색을 화이트로 고른다.
-    await tester.tap(find.text('화이트'));
+    await scrollAndTap(tester, find.text('화이트'));
     await tester.pumpAndSettle();
 
     // 검증: 흰 배경의 밝은 테마가 되고 글자색은 어두워진다.
@@ -104,6 +105,32 @@ void main() {
     expect(theme.scaffoldBackgroundColor, const Color(0xFFFFFFFF));
     expect(theme.brightness, Brightness.light);
     expect(theme.colorScheme.onSurface.computeLuminance(), lessThan(0.2));
+  });
+
+  testWidgets('soundTile_clearTapped_previewsAndSaves', (tester) async {
+    // 준비: 설정 화면을 연다.
+    final testApp = await openSettings(tester);
+
+    // 실행: 맑은 종을 고른다.
+    await scrollAndTap(tester, find.text('맑은 종'));
+    await tester.pumpAndSettle();
+
+    // 검증: 바로 들려주고, 체크가 옮겨지고, 저장된다.
+    expect(testApp.feedbackService.previews, <BellSound>[BellSound.clear]);
+    expect(
+      find.descendant(
+        of: find.ancestor(
+          of: find.text('맑은 종'),
+          matching: find.byType(ListTile),
+        ),
+        matching: find.byIcon(Icons.check),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      testApp.repository.loadSettings(CounterRules.defaultSettings).bellSound,
+      BellSound.clear,
+    );
   });
 
   testWidgets('intervalSlider_dragged_changesIntervalAndSaves', (tester) async {

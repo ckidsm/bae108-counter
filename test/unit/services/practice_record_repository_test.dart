@@ -1,7 +1,7 @@
 import 'package:bae108_counter/controllers/counter_rules.dart';
 import 'package:bae108_counter/models/alert_mode.dart';
+import 'package:bae108_counter/models/bell_sound.dart';
 import 'package:bae108_counter/models/bow_session.dart';
-import 'package:bae108_counter/models/count_mode.dart';
 import 'package:bae108_counter/models/counter_settings.dart';
 import 'package:bae108_counter/services/practice_record_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -65,9 +65,9 @@ void main() {
     // 준비: 테스트 조건을 만든다.
     final repository = await createRepository();
     const savedSettings = CounterSettings(
-      countMode: CountMode.auto,
       intervalSeconds: 45,
       alertMode: AlertMode.vibration,
+      bellSound: BellSound.moktak,
     );
 
     // 실행: 테스트 대상 동작을 수행한다.
@@ -77,9 +77,9 @@ void main() {
     );
 
     // 검증: 기대 결과를 확인한다.
-    expect(loadedSettings.countMode, CountMode.auto);
     expect(loadedSettings.intervalSeconds, 45);
     expect(loadedSettings.alertMode, AlertMode.vibration);
+    expect(loadedSettings.bellSound, BellSound.moktak);
   });
 
   test('loadSettings_nothingStored_returnsFallback', () async {
@@ -92,7 +92,7 @@ void main() {
     );
 
     // 검증: 기대 결과를 확인한다.
-    expect(loadedSettings.countMode, CounterRules.defaultSettings.countMode);
+    expect(loadedSettings.alertMode, CounterRules.defaultSettings.alertMode);
     expect(loadedSettings.intervalSeconds, CounterRules.defaultIntervalSeconds);
   });
 }
