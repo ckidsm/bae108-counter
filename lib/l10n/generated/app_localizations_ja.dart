@@ -350,4 +350,21 @@ class AppLocalizationsJa extends AppLocalizations {
   String watchSessionsImported(int count) {
     return 'Apple Watchの修行記録を$count件保存しました';
   }
+
+  @override
+  String get todayTitle => '今日';
+
+  @override
+  String get todayStartedLabel => '開始時刻';
+
+  @override
+  String get todayElapsedLabel => '経過';
+
+  @override
+  String get todayRemainingLabel => '残りの拝';
+
+  @override
+  String remainingBowsValue(int count) {
+    return '$count拝';
+  }
 }

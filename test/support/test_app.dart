@@ -13,10 +13,29 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'fake_services.dart';
 
-// 테스트 화면 크기: 390x844 논리 픽셀(일반 휴대폰)
-const Size _phonePhysicalSize = Size(1170, 2532);
+/// 일반 휴대폰(iPhone 14/15) 세로 논리 크기.
+const Size phoneSize = Size(390, 844);
+
+/// 작은 휴대폰(iPhone SE) 세로 논리 크기.
+const Size smallPhoneSize = Size(375, 667);
+
+/// Android 휴대폰(Pixel 7) 세로 논리 크기.
+const Size androidPhoneSize = Size(412, 915);
+
+/// iPad Pro 11인치 가로 논리 크기.
+const Size iPadLandscapeSize = Size(1194, 834);
+
+/// iPad 10.2인치 가로 논리 크기.
+const Size smallIPadLandscapeSize = Size(1080, 810);
+
+/// Android 10인치 태블릿 가로 논리 크기.
+const Size androidTabletLandscapeSize = Size(1280, 800);
+
+/// Android 7~8인치 태블릿 가로 논리 크기(3단 화면 최소 폭 근처).
+const Size smallAndroidTabletLandscapeSize = Size(960, 600);
+
 // 테스트 화면 배율
-const double _phonePixelRatio = 3;
+const double _testPixelRatio = 2;
 
 /// 테스트에서 쓰는 Google 계정 캘린더.
 const CalendarTarget testGoogleCalendar = CalendarTarget(
@@ -73,11 +92,12 @@ Future<TestApp> pumpTestApp(
   int? intervalSeconds,
   FakeCalendarSyncService? calendarSyncService,
   FakeWatchSyncService? watchSyncService,
+  Size logicalSize = phoneSize,
 }) async {
-  // 휴대폰 크기 화면으로 맞춘다.
-  tester.view.physicalSize = _phonePhysicalSize;
+  // 지정한 논리 크기 화면으로 맞춘다.
+  tester.view.physicalSize = logicalSize * _testPixelRatio;
   // 화면 배율
-  tester.view.devicePixelRatio = _phonePixelRatio;
+  tester.view.devicePixelRatio = _testPixelRatio;
   // 테스트가 끝나면 화면 크기를 되돌린다.
   addTearDown(tester.view.reset);
   // 기기 언어를 지정한다.

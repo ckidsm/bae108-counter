@@ -28,6 +28,7 @@ The app has no server component and no user account of its own. It was verified 
 - **Calendar recording** – when enabled, saving a record also adds an event with the start/end time, duration, and memo to the chosen device calendar. (`lib/screens/completion_screen.dart`, `lib/services/device_calendar_sync_service.dart`)
 - **App icon and emblem** – a bowing figure with "108" on gold as the app icon, and a round ascetic Buddha emblem next to the main title that follows the selected colors. To change the icon, replace `assets/icon/app_icon.png` and run `dart run flutter_launcher_icons`. (`assets/icon/`, `flutter_launcher_icons.yaml`, `lib/widgets/ascetic_emblem.dart`)
 - **Apple Watch app** – counts on the watch with two taps at the start of each bow and two strong vibrations at completion, runs as a workout so it keeps going with the screen off, takes the interval from the iPhone settings, and sends finished practices back to the iPhone history. The watch target must be created once in Xcode; see `docs/apple-watch-setup.md`. Not yet built or run on a watch. (`ios/WatchAppSources/`, `ios/Runner/AppDelegate.swift`, `lib/services/method_channel_watch_sync_service.dart`)
+- **Tablet layout** – tablets (shortest side 600 or more, iPad and Android) are locked to landscape and use a three-column screen: streak and this week on the left, the counter in the middle, the settings summary, today's progress (start time, elapsed, remaining bows) and vertical buttons on the right. Phones are locked to portrait. On iPad `UIRequiresFullScreen` is set, so Split View is not available. (`lib/theme/screen_layout.dart`, `lib/services/screen_orientation_service.dart`, `lib/screens/main_screen.dart`, `ios/Runner/Info.plist`)
 - **Four languages** – Korean, English, Japanese, and Chinese; other device languages fall back to English. (`lib/l10n/`)
 
 ## Concepts / Domain Model
@@ -151,7 +152,7 @@ flutter analyze
 flutter test
 ```
 
-Tests are grouped as `test/unit`, `test/widget`, and `test/process` and can be run per folder, for example `flutter test test/process`. (`test/`)
+Tests are grouped as `test/unit`, `test/widget`, and `test/process`. `test/process/cross_platform_flow_test.dart` counts all 108 bows on phone and tablet sizes with the target platform set to Android and to iOS. An Android build has not been run in the development container. Each folder can be run on its own, for example `flutter test test/process`. (`test/`)
 
 ### Environment variables
 

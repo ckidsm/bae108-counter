@@ -355,4 +355,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String watchSessionsImported(int count) {
     return 'Saved $count practice(s) from Apple Watch';
   }
+
+  @override
+  String get todayTitle => 'Today';
+
+  @override
+  String get todayStartedLabel => 'Started at';
+
+  @override
+  String get todayElapsedLabel => 'Elapsed';
+
+  @override
+  String get todayRemainingLabel => 'Remaining';
+
+  @override
+  String remainingBowsValue(int count) {
+    return '$count bows';
+  }
 }

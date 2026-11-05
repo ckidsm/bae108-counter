@@ -266,5 +266,17 @@
         "type": "int"
       }
     }
+  },
+  "todayTitle": "오늘",
+  "todayStartedLabel": "시작 시각",
+  "todayElapsedLabel": "경과",
+  "todayRemainingLabel": "남은 절",
+  "remainingBowsValue": "{count}배",
+  "@remainingBowsValue": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

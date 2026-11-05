@@ -99,5 +99,10 @@
   "summaryAlertLabel": "Alert",
   "summaryBellValue": "{mode} · {sound}",
   "guideFinalBow": "Last bow · finishing in {seconds}s",
-  "watchSessionsImported": "Saved {count} practice(s) from Apple Watch"
+  "watchSessionsImported": "Saved {count} practice(s) from Apple Watch",
+  "todayTitle": "Today",
+  "todayStartedLabel": "Started at",
+  "todayElapsedLabel": "Elapsed",
+  "todayRemainingLabel": "Remaining",
+  "remainingBowsValue": "{count} bows"
 }

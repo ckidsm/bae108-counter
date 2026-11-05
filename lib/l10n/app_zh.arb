@@ -99,5 +99,10 @@
   "summaryAlertLabel": "提醒",
   "summaryBellValue": "{mode} · {sound}",
   "guideFinalBow": "最后一拜 · {seconds}秒后完成",
-  "watchSessionsImported": "已保存来自 Apple Watch 的{count}条修行记录"
+  "watchSessionsImported": "已保存来自 Apple Watch 的{count}条修行记录",
+  "todayTitle": "今天",
+  "todayStartedLabel": "开始时间",
+  "todayElapsedLabel": "已用",
+  "todayRemainingLabel": "剩余",
+  "remainingBowsValue": "{count}拜"
 }

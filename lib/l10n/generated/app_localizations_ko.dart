@@ -352,4 +352,21 @@ class AppLocalizationsKo extends AppLocalizations {
   String watchSessionsImported(int count) {
     return 'Apple Watch 수행 기록 $count건을 저장했습니다';
   }
+
+  @override
+  String get todayTitle => '오늘';
+
+  @override
+  String get todayStartedLabel => '시작 시각';
+
+  @override
+  String get todayElapsedLabel => '경과';
+
+  @override
+  String get todayRemainingLabel => '남은 절';
+
+  @override
+  String remainingBowsValue(int count) {
+    return '$count배';
+  }
 }

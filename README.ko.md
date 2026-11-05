@@ -28,6 +28,7 @@
 - **캘린더 기록** – 켜 두면 기록을 저장할 때 선택한 기기 캘린더에 시작·종료 시각, 소요 시간, 메모가 담긴 일정을 추가합니다. (`lib/screens/completion_screen.dart`, `lib/services/device_calendar_sync_service.dart`)
 - **앱 아이콘과 엠블럼** – 금빛 바탕에 큰절하는 모습과 108을 넣은 앱 아이콘, 메인 제목 옆에는 선택한 색을 따라가는 원형 고행상 엠블럼. 아이콘을 바꾸려면 `assets/icon/app_icon.png`를 교체하고 `dart run flutter_launcher_icons`를 실행합니다. (`assets/icon/`, `flutter_launcher_icons.yaml`, `lib/widgets/ascetic_emblem.dart`)
 - **Apple Watch 앱** – 워치에서 절 시작마다 톡톡 두 번, 완료 때 강하게 두 번 진동하며 셉니다. 운동 세션으로 실행되어 화면이 꺼져도 계속되고, 간격은 iPhone 설정을 따르며, 끝난 수행은 iPhone 수행 기록으로 들어옵니다. 워치 타깃은 Xcode에서 한 번 만들어야 합니다(`docs/apple-watch-setup.md`). 아직 워치에서 빌드·실행해 보지 않았습니다. (`ios/WatchAppSources/`, `ios/Runner/AppDelegate.swift`, `lib/services/method_channel_watch_sync_service.dart`)
+- **태블릿 화면** – 태블릿(짧은 변 600 이상, iPad·Android)은 가로로 고정되고 3단 화면을 씁니다. 왼쪽에 연속 수행·이번 주, 가운데 원형 카운터, 오른쪽에 설정 요약·오늘 진행(시작 시각·경과·남은 절)과 세로 버튼이 놓입니다. 휴대폰은 세로로 고정됩니다. iPad는 `UIRequiresFullScreen`을 켜서 화면 분할(Split View)은 쓸 수 없습니다. (`lib/theme/screen_layout.dart`, `lib/services/screen_orientation_service.dart`, `lib/screens/main_screen.dart`, `ios/Runner/Info.plist`)
 - **4개 언어** – 한국어·영어·일본어·중국어를 지원하며, 그 외 언어는 영어로 표시합니다. (`lib/l10n/`)
 
 ## Concepts / Domain Model
@@ -151,7 +152,7 @@ flutter analyze
 flutter test
 ```
 
-테스트는 `test/unit`, `test/widget`, `test/process`로 나뉘어 있어 `flutter test test/process`처럼 폴더별로 실행할 수 있습니다. (`test/`)
+테스트는 `test/unit`, `test/widget`, `test/process`로 나뉩니다. `test/process/cross_platform_flow_test.dart`는 휴대폰·태블릿 크기에서 플랫폼을 Android와 iOS로 바꿔 108배를 끝까지 셉니다. Android 빌드는 개발 컨테이너에서 실행해 보지 않았습니다. 테스트는 `flutter test test/process`처럼 폴더별로 실행할 수 있습니다. (`test/`)
 
 ### 환경변수
 

@@ -10,16 +10,20 @@ import '../models/counter_phase.dart';
 import '../services/bow_feedback_service.dart';
 import '../services/calendar_sync_service.dart';
 import '../services/practice_record_repository.dart';
+import '../services/practice_statistics_calculator.dart';
 import '../services/wake_lock_service.dart';
 import '../services/watch_sync_service.dart';
 import '../theme/app_colors.dart';
+import '../theme/screen_layout.dart';
 import '../widgets/ascetic_emblem.dart';
 import '../widgets/clock_header.dart';
 import '../widgets/counter_controls.dart';
 import '../widgets/counter_ring.dart';
 import '../widgets/guide_message.dart';
+import '../widgets/practice_overview_panel.dart';
 import '../widgets/segment_progress_bars.dart';
 import '../widgets/settings_summary_bar.dart';
+import '../widgets/today_progress_card.dart';
 import 'completion_screen.dart';
 import 'history_screen.dart';
 import 'settings_screen.dart';
@@ -79,6 +83,16 @@ class _MainScreenState extends State<MainScreen> {
   static const double _mediumSpacing = 16;
   // 큰 간격
   static const double _largeSpacing = 24;
+  // 태블릿 좌우 여백
+  static const double _tabletHorizontalPadding = 36;
+  // 태블릿 양쪽 열 최대 폭
+  static const double _tabletSideMaxWidth = 300;
+  // 태블릿 양쪽 열 최소 폭
+  static const double _tabletSideMinWidth = 240;
+  // 화면 폭 대비 태블릿 양쪽 열 폭 비율
+  static const double _tabletSideWidthRatio = 0.25;
+  // 태블릿 열 사이 간격
+  static const double _tabletColumnSpacing = 28;
   // 화면 켜짐 안내 아이콘 크기
   static const double _noticeIconSize = 16;
 
@@ -141,56 +155,172 @@ class _MainScreenState extends State<MainScreen> {
           // 감시 대상
           listenable: _controller,
           // 화면 내용
-          builder: (context, _) => Padding(
-            // 여백
-            padding: const EdgeInsets.symmetric(
-              horizontal: _horizontalPadding,
-              vertical: _verticalPadding,
-            ),
-            // 스크롤 없이 한 화면에 위에서 아래로 놓는다.
-            child: Column(
-              // 왼쪽 정렬
-              crossAxisAlignment: CrossAxisAlignment.start,
+          // 넓은 가로 화면(태블릿)이면 3단, 아니면 휴대폰 화면
+          builder: (context, _) => LayoutBuilder(
+            builder: (context, constraints) =>
+                ScreenLayout.useWideLayout(constraints.biggest)
+                ? _buildTabletLayout(localizations, constraints.maxWidth)
+                : _buildPhoneLayout(localizations),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // 휴대폰(세로): 위에서 아래로 한 화면
+  Widget _buildPhoneLayout(AppLocalizations localizations) {
+    // 여백
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: _horizontalPadding,
+        vertical: _verticalPadding,
+      ),
+      // 스크롤 없이 한 화면에 위에서 아래로 놓는다.
+      child: Column(
+        // 왼쪽 정렬
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          // 시계와 기록·설정 버튼
+          _buildHeader(localizations),
+          // 간격
+          const SizedBox(height: _smallSpacing),
+          // 엠블럼과 제목·화면 켜짐 안내
+          _buildTitle(localizations),
+          // 간격
+          const SizedBox(height: _mediumSpacing),
+          // 절 간격·알림 요약(누르면 설정)
+          _buildSummaryBar(isStacked: false),
+          // 원형 카운터·구간 막대·안내 문구가 남은 높이를 차지한다.
+          Expanded(child: _buildCounterArea(localizations)),
+          // 하단 버튼(화면 아래 고정)
+          _buildControls(isVertical: false),
+        ],
+      ),
+    );
+  }
+
+  // 태블릿(가로): 오늘 현황 | 원형 카운터 | 설정·버튼 3단
+  Widget _buildTabletLayout(
+    AppLocalizations localizations,
+    double screenWidth,
+  ) {
+    // 양쪽 열 폭: 좁은 태블릿에서는 줄여 가운데 원을 크게 남긴다.
+    final sideWidth = (screenWidth * _tabletSideWidthRatio).clamp(
+      _tabletSideMinWidth,
+      _tabletSideMaxWidth,
+    );
+    // 오늘 날짜
+    final today = DateTime.now();
+    // 연속 수행·이번 주 통계
+    final statistics = PracticeStatisticsCalculator.calculate(
+      widget.repository.loadSessions(),
+      today,
+    );
+    // 여백
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: _tabletHorizontalPadding,
+        vertical: _verticalPadding * 2,
+      ),
+      child: Column(
+        children: <Widget>[
+          // 시계와 기록·설정 버튼
+          _buildHeader(localizations),
+          // 간격
+          const SizedBox(height: _mediumSpacing),
+          // 3단이 남은 높이를 차지한다.
+          Expanded(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
-                // 시계와 기록·설정 버튼
-                _buildHeader(localizations),
-                // 간격
-                const SizedBox(height: _smallSpacing),
-                // 엠블럼과 제목·화면 켜짐 안내
-                _buildTitle(localizations),
-                // 간격
-                const SizedBox(height: _mediumSpacing),
-                // 절 간격·알림 요약(누르면 설정)
-                SettingsSummaryBar(
-                  // 절 간격(초)
-                  intervalSeconds: _controller.intervalSeconds,
-                  // 알림 방식
-                  alertMode: _controller.alertMode,
-                  // 종소리 종류
-                  bellSound: _controller.bellSound,
-                  // 누르면 설정 화면을 연다.
-                  onTap: _openSettings,
+                // 왼쪽: 엠블럼·제목, 연속 수행, 이번 주
+                SizedBox(
+                  width: sideWidth,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: <Widget>[
+                      // 엠블럼과 제목
+                      _buildTitle(localizations),
+                      // 간격
+                      const SizedBox(height: _largeSpacing),
+                      // 연속 수행·이번 주
+                      PracticeOverviewPanel(
+                        statistics: statistics,
+                        today: today,
+                      ),
+                    ],
+                  ),
                 ),
-                // 원형 카운터·구간 막대·안내 문구가 남은 높이를 차지한다.
+                // 간격
+                const SizedBox(width: _tabletColumnSpacing),
+                // 가운데: 원형 카운터·구간 막대·안내
                 Expanded(child: _buildCounterArea(localizations)),
-                // 하단 버튼(화면 아래 고정)
-                CounterControls(
-                  // 현재 단계
-                  phase: _controller.phase,
-                  // 현재 절 수
-                  count: _controller.count,
-                  // 시작(완료 후에는 회향하기)
-                  onStart: _handleStartPressed,
-                  // 정지(센 수 유지)
-                  onStop: _controller.stop,
-                  // 처음부터
-                  onReset: _confirmReset,
+                // 간격
+                const SizedBox(width: _tabletColumnSpacing),
+                // 오른쪽: 설정 요약, 오늘 진행, 세로 버튼
+                SizedBox(
+                  width: sideWidth,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: <Widget>[
+                      // 절 간격·알림 요약(두 줄)
+                      _buildSummaryBar(isStacked: true),
+                      // 간격
+                      const SizedBox(height: _mediumSpacing),
+                      // 오늘 진행
+                      TodayProgressCard(
+                        startedAt: _controller.startedAt,
+                        activeElapsed: _controller.activeElapsed,
+                        count: _controller.count,
+                      ),
+                      // 버튼을 아래로 민다.
+                      const Spacer(),
+                      // 세로 버튼
+                      _buildControls(isVertical: true),
+                    ],
+                  ),
                 ),
               ],
             ),
           ),
-        ),
+        ],
       ),
+    );
+  }
+
+  // 절 간격·알림 요약(누르면 설정)
+  Widget _buildSummaryBar({required bool isStacked}) {
+    // 요약 바
+    return SettingsSummaryBar(
+      // 절 간격(초)
+      intervalSeconds: _controller.intervalSeconds,
+      // 알림 방식
+      alertMode: _controller.alertMode,
+      // 종소리 종류
+      bellSound: _controller.bellSound,
+      // 누르면 설정 화면을 연다.
+      onTap: _openSettings,
+      // 두 줄 여부
+      isStacked: isStacked,
+    );
+  }
+
+  // 시작 | 정지 | 처음부터
+  Widget _buildControls({required bool isVertical}) {
+    // 버튼 줄
+    return CounterControls(
+      // 현재 단계
+      phase: _controller.phase,
+      // 현재 절 수
+      count: _controller.count,
+      // 시작(완료 후에는 회향하기)
+      onStart: _handleStartPressed,
+      // 정지(센 수 유지)
+      onStop: _controller.stop,
+      // 처음부터
+      onReset: _confirmReset,
+      // 세로 배치 여부
+      isVertical: isVertical,
     );
   }
 

@@ -701,6 +701,36 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'Apple Watch 수행 기록 {count}건을 저장했습니다'**
   String watchSessionsImported(int count);
+
+  /// No description provided for @todayTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'오늘'**
+  String get todayTitle;
+
+  /// No description provided for @todayStartedLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'시작 시각'**
+  String get todayStartedLabel;
+
+  /// No description provided for @todayElapsedLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'경과'**
+  String get todayElapsedLabel;
+
+  /// No description provided for @todayRemainingLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'남은 절'**
+  String get todayRemainingLabel;
+
+  /// No description provided for @remainingBowsValue.
+  ///
+  /// In ko, this message translates to:
+  /// **'{count}배'**
+  String remainingBowsValue(int count);
 }
 
 class _AppLocalizationsDelegate

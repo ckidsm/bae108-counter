@@ -348,4 +348,21 @@ class AppLocalizationsZh extends AppLocalizations {
   String watchSessionsImported(int count) {
     return '已保存来自 Apple Watch 的$count条修行记录';
   }
+
+  @override
+  String get todayTitle => '今天';
+
+  @override
+  String get todayStartedLabel => '开始时间';
+
+  @override
+  String get todayElapsedLabel => '已用';
+
+  @override
+  String get todayRemainingLabel => '剩余';
+
+  @override
+  String remainingBowsValue(int count) {
+    return '$count拜';
+  }
 }

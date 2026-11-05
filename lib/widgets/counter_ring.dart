@@ -21,7 +21,7 @@ class CounterRing extends StatelessWidget {
   });
 
   // 원의 최대 지름
-  static const double _maximumDiameter = 320;
+  static const double _maximumDiameter = 560;
   // 화면 폭 대비 원 지름 비율
   static const double _widthRatio = 0.9;
   // 원 지름 대비 가운데 큰 숫자 글자 크기 비율

@@ -147,10 +147,7 @@ void main() {
 
   testWidgets('mainScreen_smallPhone_fitsWithoutOverflow', (tester) async {
     // 준비: 작은 휴대폰(375x667, iPhone SE) 크기로 띄운다.
-    await pumpTestApp(tester);
-    tester.view.physicalSize = const Size(750, 1334);
-    tester.view.devicePixelRatio = 2;
-    await tester.pumpAndSettle();
+    await pumpTestApp(tester, logicalSize: smallPhoneSize);
 
     // 실행 및 검증: 넘침 오류 없이 버튼까지 모두 보인다.
     expect(tester.takeException(), isNull);

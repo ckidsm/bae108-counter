@@ -99,5 +99,10 @@
   "summaryAlertLabel": "通知",
   "summaryBellValue": "{mode} · {sound}",
   "guideFinalBow": "最後の拝 · {seconds}秒後に完了",
-  "watchSessionsImported": "Apple Watchの修行記録を{count}件保存しました"
+  "watchSessionsImported": "Apple Watchの修行記録を{count}件保存しました",
+  "todayTitle": "今日",
+  "todayStartedLabel": "開始時刻",
+  "todayElapsedLabel": "経過",
+  "todayRemainingLabel": "残りの拝",
+  "remainingBowsValue": "{count}拝"
 }
