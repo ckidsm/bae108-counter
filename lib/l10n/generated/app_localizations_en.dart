@@ -22,26 +22,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get historyTooltip => 'Practice history';
 
   @override
-  String get intervalTitle => 'Bow interval';
-
-  @override
-  String get intervalCustom => 'Custom';
-
-  @override
-  String intervalCustomSelected(String duration) {
-    return 'Custom · $duration';
-  }
-
-  @override
-  String get customIntervalSheetTitle => 'Custom bow interval';
-
-  @override
   String customIntervalRange(String minimum, String maximum, String step) {
     return '$minimum – $maximum, in steps of $step';
   }
-
-  @override
-  String get customIntervalApply => 'Apply';
 
   @override
   String durationSeconds(int seconds) {
@@ -338,7 +321,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Played when the alert is set to bell. Tap to hear it';
 
   @override
-  String get soundDeep => 'Deep bell (default)';
+  String get soundDeep => 'Deep bell';
 
   @override
   String get soundClear => 'Clear bell';
@@ -348,4 +331,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get soundMoktak => 'Moktak';
+
+  @override
+  String get summaryIntervalLabel => 'Interval';
+
+  @override
+  String get summaryAlertLabel => 'Alert';
+
+  @override
+  String summaryBellValue(String mode, String sound) {
+    return '$mode · $sound';
+  }
 }

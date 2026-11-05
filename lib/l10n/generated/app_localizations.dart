@@ -126,41 +126,11 @@ abstract class AppLocalizations {
   /// **'수행 기록'**
   String get historyTooltip;
 
-  /// No description provided for @intervalTitle.
-  ///
-  /// In ko, this message translates to:
-  /// **'절 간격'**
-  String get intervalTitle;
-
-  /// No description provided for @intervalCustom.
-  ///
-  /// In ko, this message translates to:
-  /// **'직접 설정'**
-  String get intervalCustom;
-
-  /// No description provided for @intervalCustomSelected.
-  ///
-  /// In ko, this message translates to:
-  /// **'직접 · {duration}'**
-  String intervalCustomSelected(String duration);
-
-  /// No description provided for @customIntervalSheetTitle.
-  ///
-  /// In ko, this message translates to:
-  /// **'절 간격 직접 설정'**
-  String get customIntervalSheetTitle;
-
   /// No description provided for @customIntervalRange.
   ///
   /// In ko, this message translates to:
   /// **'{minimum} ~ {maximum}, {step} 단위'**
   String customIntervalRange(String minimum, String maximum, String step);
-
-  /// No description provided for @customIntervalApply.
-  ///
-  /// In ko, this message translates to:
-  /// **'적용'**
-  String get customIntervalApply;
 
   /// No description provided for @durationSeconds.
   ///
@@ -675,7 +645,7 @@ abstract class AppLocalizations {
   /// No description provided for @soundDeep.
   ///
   /// In ko, this message translates to:
-  /// **'중저음 종 (기본)'**
+  /// **'중저음 종'**
   String get soundDeep;
 
   /// No description provided for @soundClear.
@@ -695,6 +665,24 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'목탁'**
   String get soundMoktak;
+
+  /// No description provided for @summaryIntervalLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'절 간격'**
+  String get summaryIntervalLabel;
+
+  /// No description provided for @summaryAlertLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'알림'**
+  String get summaryAlertLabel;
+
+  /// No description provided for @summaryBellValue.
+  ///
+  /// In ko, this message translates to:
+  /// **'{mode} · {sound}'**
+  String summaryBellValue(String mode, String sound);
 }
 
 class _AppLocalizationsDelegate

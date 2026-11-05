@@ -23,10 +23,11 @@ void main() {
   testWidgets('intervalPractice_fullFlow_savesRecordAndShowsItInHistory', (
     tester,
   ) async {
-    // 준비: 앱을 띄우고 5초 간격으로 시작한다.
-    final testApp = await pumpTestApp(tester);
-    await scrollAndTap(tester, find.text('5초'));
-    await tester.pumpAndSettle();
+    // 준비: 5초 간격이 저장된 앱을 띄우고 시작한다.
+    final testApp = await pumpTestApp(
+      tester,
+      intervalSeconds: _intervalSeconds,
+    );
     await scrollAndTap(tester, find.text('시작'));
 
     // 실행 1: 준비 10초 뒤 107배까지 세면 아직 진행 중이다.
@@ -72,10 +73,11 @@ void main() {
   testWidgets('startStopReset_flow_keepsCountOnStopAndClearsOnReset', (
     tester,
   ) async {
-    // 준비: 5초 간격을 고른다.
-    final testApp = await pumpTestApp(tester);
-    await scrollAndTap(tester, find.text('5초'));
-    await tester.pumpAndSettle();
+    // 준비: 5초 간격이 저장된 앱을 띄운다.
+    final testApp = await pumpTestApp(
+      tester,
+      intervalSeconds: _intervalSeconds,
+    );
 
     // 실행 1: 시작하면 10초 준비 카운트다운이 나온다.
     await scrollAndTap(tester, find.text('시작'));

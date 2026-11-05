@@ -4,12 +4,7 @@
   "mainTitle": "Today's 108 Bows",
   "keepScreenOnNotice": "Screen stays on until 108 bows",
   "historyTooltip": "Practice history",
-  "intervalTitle": "Bow interval",
-  "intervalCustom": "Custom",
-  "intervalCustomSelected": "Custom · {duration}",
-  "customIntervalSheetTitle": "Custom bow interval",
   "customIntervalRange": "{minimum} – {maximum}, in steps of {step}",
-  "customIntervalApply": "Apply",
   "durationSeconds": "{seconds}s",
   "durationMinutes": "{minutes}m",
   "durationMinutesSeconds": "{minutes}m {seconds}s",
@@ -95,8 +90,11 @@
   "guideIdle": "After a {seconds}-second countdown, one bow is counted every {interval}",
   "settingsSoundSection": "Bell sound",
   "settingsSoundDescription": "Played when the alert is set to bell. Tap to hear it",
-  "soundDeep": "Deep bell (default)",
+  "soundDeep": "Deep bell",
   "soundClear": "Clear bell",
   "soundChime": "Wind chime",
-  "soundMoktak": "Moktak"
+  "soundMoktak": "Moktak",
+  "summaryIntervalLabel": "Interval",
+  "summaryAlertLabel": "Alert",
+  "summaryBellValue": "{mode} · {sound}"
 }

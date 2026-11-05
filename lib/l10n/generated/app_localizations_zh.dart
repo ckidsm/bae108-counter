@@ -22,26 +22,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get historyTooltip => '修行记录';
 
   @override
-  String get intervalTitle => '礼拜间隔';
-
-  @override
-  String get intervalCustom => '自定义';
-
-  @override
-  String intervalCustomSelected(String duration) {
-    return '自定义 · $duration';
-  }
-
-  @override
-  String get customIntervalSheetTitle => '自定义礼拜间隔';
-
-  @override
   String customIntervalRange(String minimum, String maximum, String step) {
     return '$minimum ~ $maximum，以$step为单位';
   }
-
-  @override
-  String get customIntervalApply => '应用';
 
   @override
   String durationSeconds(int seconds) {
@@ -331,7 +314,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settingsSoundDescription => '提醒方式为钟声时播放的声音。点击即可试听';
 
   @override
-  String get soundDeep => '低沉钟声（默认）';
+  String get soundDeep => '低沉钟声';
 
   @override
   String get soundClear => '清脆钟声';
@@ -341,4 +324,15 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get soundMoktak => '木鱼';
+
+  @override
+  String get summaryIntervalLabel => '间隔';
+
+  @override
+  String get summaryAlertLabel => '提醒';
+
+  @override
+  String summaryBellValue(String mode, String sound) {
+    return '$mode · $sound';
+  }
 }

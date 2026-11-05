@@ -4,12 +4,7 @@
   "mainTitle": "今日108拜",
   "keepScreenOnNotice": "108拜完成前屏幕保持常亮",
   "historyTooltip": "修行记录",
-  "intervalTitle": "礼拜间隔",
-  "intervalCustom": "自定义",
-  "intervalCustomSelected": "自定义 · {duration}",
-  "customIntervalSheetTitle": "自定义礼拜间隔",
   "customIntervalRange": "{minimum} ~ {maximum}，以{step}为单位",
-  "customIntervalApply": "应用",
   "durationSeconds": "{seconds}秒",
   "durationMinutes": "{minutes}分",
   "durationMinutesSeconds": "{minutes}分{seconds}秒",
@@ -95,8 +90,11 @@
   "guideIdle": "开始后准备{seconds}秒，然后每{interval}计一拜",
   "settingsSoundSection": "钟声",
   "settingsSoundDescription": "提醒方式为钟声时播放的声音。点击即可试听",
-  "soundDeep": "低沉钟声（默认）",
+  "soundDeep": "低沉钟声",
   "soundClear": "清脆钟声",
   "soundChime": "风铃",
-  "soundMoktak": "木鱼"
+  "soundMoktak": "木鱼",
+  "summaryIntervalLabel": "间隔",
+  "summaryAlertLabel": "提醒",
+  "summaryBellValue": "{mode} · {sound}"
 }

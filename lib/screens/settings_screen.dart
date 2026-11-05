@@ -4,13 +4,17 @@ import '../controllers/app_settings_controller.dart';
 import '../controllers/counter_controller.dart';
 import '../l10n/generated/app_localizations.dart';
 import '../models/accent_preset.dart';
+import '../controllers/counter_rules.dart';
+import '../models/alert_mode.dart';
 import '../models/background_preset.dart';
 import '../models/bell_sound.dart';
 import '../models/calendar_target.dart';
 import '../services/calendar_sync_service.dart';
 import '../theme/app_colors.dart';
+import '../widgets/alert_mode_selector.dart';
 import '../widgets/color_swatch_option.dart';
 import '../widgets/interval_slider.dart';
+import '../widgets/setting_labels.dart';
 
 /*────────────────────────────────────────────────────────────────────────
  Purpose  : Lets the user set the count interval, bell sound, colors, and calendar recording.
@@ -24,6 +28,7 @@ class SettingsScreen extends StatefulWidget {
     required this.counterController,
     required this.onIntervalChanged,
     required this.onBellSoundChanged,
+    required this.onAlertModeChanged,
     required this.appSettingsController,
     required this.calendarSyncService,
   });
@@ -36,6 +41,9 @@ class SettingsScreen extends StatefulWidget {
 
   /// Applies, previews, and stores a new bell sound.
   final ValueChanged<BellSound> onBellSoundChanged;
+
+  /// Applies and stores a new alert mode.
+  final ValueChanged<AlertMode> onAlertModeChanged;
 
   /// Holds the theme and calendar settings.
   final AppSettingsController appSettingsController;
@@ -57,6 +65,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
   static const double _cardSpacing = 12;
   // 제목과 내용 사이 간격
   static const double _titleSpacing = 12;
+  // 간격 칩 사이 간격
+  static const double _chipSpacing = 8;
   // 색 견본 사이 간격
   static const double _swatchSpacing = 2;
 
@@ -88,7 +98,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             // 간격
             const SizedBox(height: _cardSpacing),
             // 종소리
-            _buildSoundCard(localizations),
+            _buildAlertCard(localizations),
             // 간격
             const SizedBox(height: _cardSpacing),
             // 테마
@@ -111,13 +121,34 @@ class _SettingsScreenState extends State<SettingsScreen> {
       title: localizations.settingsIntervalSection,
       // 설명과 슬라이더
       children: <Widget>[
-        // "자동 간격 방식에서 1배를 세는 간격입니다"
+        // "시작하면 이 간격마다 1배씩 셉니다"
         Text(
           // 설명
           localizations.settingsIntervalDescription,
           // 보조 글자
           style: Theme.of(context).textTheme.bodySmall
               ?.copyWith(color: context.textSecondaryColor),
+        ),
+        // 간격
+        const SizedBox(height: _titleSpacing),
+        // 5초·10초·20초 프리셋 칩
+        Wrap(
+          // 칩 사이 간격
+          spacing: _chipSpacing,
+          children: <Widget>[
+            // 프리셋마다 칩
+            for (final presetSeconds in CounterRules.presetIntervalSeconds)
+              // 선택형 칩
+              ChoiceChip(
+                // "5초"
+                label: Text(localizations.durationSeconds(presetSeconds)),
+                // 현재 값과 같으면 선택
+                selected:
+                    widget.counterController.intervalSeconds == presetSeconds,
+                // 누르면 바로 적용·저장한다.
+                onSelected: (_) => widget.onIntervalChanged(presetSeconds),
+              ),
+          ],
         ),
         // 간격
         const SizedBox(height: _titleSpacing),
@@ -135,62 +166,63 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  // 종소리 선택 카드
-  Widget _buildSoundCard(AppLocalizations localizations) {
+  // 알림 방식 카드(종소리를 고르면 소리 종류도 고른다)
+  Widget _buildAlertCard(AppLocalizations localizations) {
+    // 현재 알림 방식
+    final alertMode = widget.counterController.alertMode;
     // 현재 종소리
     final selectedSound = widget.counterController.bellSound;
     // 제목이 있는 카드
     return _buildSectionCard(
-      // "종소리"
-      title: localizations.settingsSoundSection,
+      // "알림 방식"
+      title: localizations.alertModeTitle,
       children: <Widget>[
-        // 설명
-        Text(
-          // "알림 방식이 종소리일 때 울리는 소리입니다…"
-          localizations.settingsSoundDescription,
-          // 보조 글자
-          style: Theme.of(context).textTheme.bodySmall
-              ?.copyWith(color: context.textSecondaryColor),
+        // 종소리·진동·무음
+        AlertModeSelector(
+          // 현재 방식
+          selectedMode: alertMode,
+          // 바꾸면 바로 적용·저장한다.
+          onChanged: widget.onAlertModeChanged,
         ),
-        // 간격
-        const SizedBox(height: _titleSpacing / 2),
-        // 소리마다 한 줄
-        for (final bellSound in BellSound.values)
-          // 한 줄
-          ListTile(
-            // 좌우 여백 제거
-            contentPadding: EdgeInsets.zero,
-            // 재생 아이콘(누르면 들어 볼 수 있다는 표시)
-            leading: Icon(
-              Icons.play_circle_outline,
-              color: context.textSecondaryColor,
-            ),
-            // 소리 이름
-            title: Text(_soundNameOf(localizations, bellSound)),
-            // 선택된 소리는 체크 표시
-            trailing: bellSound == selectedSound
-                ? Icon(Icons.check, color: context.accentColor)
-                : null,
-            // 누르면 고르고 바로 들려준다.
-            onTap: () => widget.onBellSoundChanged(bellSound),
+        // 종소리일 때만 소리 종류를 보여 준다.
+        if (alertMode == AlertMode.bell) ...<Widget>[
+          // 간격
+          const SizedBox(height: _titleSpacing),
+          // "종소리" 소제목
+          _buildSubheading(localizations.settingsSoundSection),
+          // 설명
+          Text(
+            // "알림 방식이 종소리일 때 울리는 소리입니다…"
+            localizations.settingsSoundDescription,
+            // 보조 글자
+            style: Theme.of(context).textTheme.bodySmall
+                ?.copyWith(color: context.textSecondaryColor),
           ),
+          // 소리마다 한 줄
+          for (final bellSound in BellSound.values)
+            // 한 줄
+            ListTile(
+              // 좌우 여백 제거
+              contentPadding: EdgeInsets.zero,
+              // 재생 아이콘(누르면 들어 볼 수 있다는 표시)
+              leading: Icon(
+                Icons.play_circle_outline,
+                color: context.textSecondaryColor,
+              ),
+              // 소리 이름
+              title: Text(
+                SettingLabels.bellSoundName(localizations, bellSound),
+              ),
+              // 선택된 소리는 체크 표시
+              trailing: bellSound == selectedSound
+                  ? Icon(Icons.check, color: context.accentColor)
+                  : null,
+              // 누르면 고르고 바로 들려준다.
+              onTap: () => widget.onBellSoundChanged(bellSound),
+            ),
+        ],
       ],
     );
-  }
-
-  // 종소리 이름
-  String _soundNameOf(AppLocalizations localizations, BellSound bellSound) {
-    // 소리별 번역 이름
-    return switch (bellSound) {
-      // 중저음 종
-      BellSound.deep => localizations.soundDeep,
-      // 맑은 종
-      BellSound.clear => localizations.soundClear,
-      // 풍경
-      BellSound.chime => localizations.soundChime,
-      // 목탁
-      BellSound.moktak => localizations.soundMoktak,
-    };
   }
 
   // 색상 테마 카드(배경색과 버튼색)

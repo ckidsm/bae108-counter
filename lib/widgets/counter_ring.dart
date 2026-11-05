@@ -21,11 +21,11 @@ class CounterRing extends StatelessWidget {
   });
 
   // 원의 최대 지름
-  static const double _maximumDiameter = 300;
+  static const double _maximumDiameter = 320;
   // 화면 폭 대비 원 지름 비율
-  static const double _widthRatio = 0.78;
-  // 가운데 큰 숫자 글자 크기
-  static const double _valueFontSize = 84;
+  static const double _widthRatio = 0.9;
+  // 원 지름 대비 가운데 큰 숫자 글자 크기 비율
+  static const double _valueFontRatio = 0.3;
 
   /// The overall progress from 0.0 to 1.0.
   final double progress;
@@ -47,9 +47,9 @@ class CounterRing extends StatelessWidget {
     // 화면 폭에 맞춰 원 크기를 정한다.
     return LayoutBuilder(
       builder: (context, constraints) {
-        // 폭의 78%와 최대 지름 중 작은 값을 지름으로 쓴다.
+        // 폭의 90%, 남은 높이, 최대 지름 중 가장 작은 값을 지름으로 쓴다.
         final diameter = math.min(
-          constraints.maxWidth * _widthRatio,
+          math.min(constraints.maxWidth * _widthRatio, constraints.maxHeight),
           _maximumDiameter,
         );
         // 가운데 정렬
@@ -83,6 +83,8 @@ class CounterRing extends StatelessWidget {
                 captionText: captionText,
                 // 완료 시 녹색 글자
                 isCompleted: isCompleted,
+                // 원 크기에 맞춘 숫자 크기
+                valueFontSize: diameter * _valueFontRatio,
               ),
             ),
           ),
@@ -99,6 +101,7 @@ class _CounterLabel extends StatelessWidget {
     required this.valueText,
     required this.captionText,
     required this.isCompleted,
+    required this.valueFontSize,
   });
 
   // 큰 숫자
@@ -107,6 +110,8 @@ class _CounterLabel extends StatelessWidget {
   final String captionText;
   // 완료 여부
   final bool isCompleted;
+  // 큰 숫자 글자 크기
+  final double valueFontSize;
 
   @override
   Widget build(BuildContext context) {
@@ -124,7 +129,7 @@ class _CounterLabel extends StatelessWidget {
           // 큰 글자, 완료 시 녹색
           style: textTheme.displayLarge?.copyWith(
             // 글자 크기
-            fontSize: CounterRing._valueFontSize,
+            fontSize: valueFontSize,
             // 굵게
             fontWeight: FontWeight.w600,
             // 완료 시 녹색, 아니면 기본 글자색

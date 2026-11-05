@@ -16,7 +16,8 @@ The app has no server component and no user account of its own. It was verified 
 
 ## Key Features
 
-- **Interval counting** – 5, 10, or 20-second presets, or a custom value from 5 seconds to 3 minutes in 5-second steps. (`lib/widgets/interval_selector.dart`, `lib/widgets/interval_slider.dart`, `lib/controllers/counter_rules.dart`)
+- **Interval counting** – 5, 10, or 20-second presets, or a custom value from 5 seconds to 3 minutes in 5-second steps, set on the Settings screen. (`lib/screens/settings_screen.dart`, `lib/widgets/interval_slider.dart`, `lib/controllers/counter_rules.dart`)
+- **One-screen main view** – the main screen shows the current interval and alert in one tappable line that opens Settings, and fits without scrolling; the counter ring sizes itself to the remaining height. (`lib/widgets/settings_summary_bar.dart`, `lib/screens/main_screen.dart`, `lib/widgets/counter_ring.dart`)
 - **Start | Stop | Restart** – Start begins counting, Stop pauses while keeping the count, and Restart clears it after a confirmation. (`lib/widgets/counter_controls.dart`, `lib/screens/main_screen.dart`)
 - **10-second preparation countdown** – starting from 0 runs a 10 → 1 countdown before counting; starting again after Stop continues without it. (`lib/controllers/counter_controller.dart`)
 - **Per-bow feedback** – bell, vibration, or silent; the 108th bow is longer. Four bell sounds can be chosen in Settings: deep bell (default), clear bell, wind chime, and moktak. If a sound file is missing, the system click sound is used. (`lib/services/device_bow_feedback_service.dart`, `assets/sounds/`)

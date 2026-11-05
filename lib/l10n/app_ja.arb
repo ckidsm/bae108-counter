@@ -4,12 +4,7 @@
   "mainTitle": "今日の108拝",
   "keepScreenOnNotice": "108拝まで画面をオンに保持",
   "historyTooltip": "修行記録",
-  "intervalTitle": "拝の間隔",
-  "intervalCustom": "カスタム",
-  "intervalCustomSelected": "カスタム · {duration}",
-  "customIntervalSheetTitle": "拝の間隔をカスタム設定",
   "customIntervalRange": "{minimum}〜{maximum}、{step}単位",
-  "customIntervalApply": "適用",
   "durationSeconds": "{seconds}秒",
   "durationMinutes": "{minutes}分",
   "durationMinutesSeconds": "{minutes}分{seconds}秒",
@@ -95,8 +90,11 @@
   "guideIdle": "スタート後、{seconds}秒の準備ののち{interval}ごとに1拝ずつ数えます",
   "settingsSoundSection": "鐘の音",
   "settingsSoundDescription": "通知方法が鐘の音のときに鳴る音です。タップすると試聴できます",
-  "soundDeep": "低音の鐘（標準）",
+  "soundDeep": "低音の鐘",
   "soundClear": "澄んだ鐘",
   "soundChime": "風鈴",
-  "soundMoktak": "木魚"
+  "soundMoktak": "木魚",
+  "summaryIntervalLabel": "間隔",
+  "summaryAlertLabel": "通知",
+  "summaryBellValue": "{mode} · {sound}"
 }

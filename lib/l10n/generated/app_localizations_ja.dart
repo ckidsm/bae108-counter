@@ -22,26 +22,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get historyTooltip => '修行記録';
 
   @override
-  String get intervalTitle => '拝の間隔';
-
-  @override
-  String get intervalCustom => 'カスタム';
-
-  @override
-  String intervalCustomSelected(String duration) {
-    return 'カスタム · $duration';
-  }
-
-  @override
-  String get customIntervalSheetTitle => '拝の間隔をカスタム設定';
-
-  @override
   String customIntervalRange(String minimum, String maximum, String step) {
     return '$minimum〜$maximum、$step単位';
   }
-
-  @override
-  String get customIntervalApply => '適用';
 
   @override
   String durationSeconds(int seconds) {
@@ -333,7 +316,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settingsSoundDescription => '通知方法が鐘の音のときに鳴る音です。タップすると試聴できます';
 
   @override
-  String get soundDeep => '低音の鐘（標準）';
+  String get soundDeep => '低音の鐘';
 
   @override
   String get soundClear => '澄んだ鐘';
@@ -343,4 +326,15 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get soundMoktak => '木魚';
+
+  @override
+  String get summaryIntervalLabel => '間隔';
+
+  @override
+  String get summaryAlertLabel => '通知';
+
+  @override
+  String summaryBellValue(String mode, String sound) {
+    return '$mode · $sound';
+  }
 }

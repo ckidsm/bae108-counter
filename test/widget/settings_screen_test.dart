@@ -1,5 +1,6 @@
 import 'package:bae108_counter/controllers/counter_rules.dart';
 import 'package:bae108_counter/models/accent_preset.dart';
+import 'package:bae108_counter/models/alert_mode.dart';
 import 'package:bae108_counter/models/background_preset.dart';
 import 'package:bae108_counter/models/bell_sound.dart';
 import 'package:bae108_counter/models/calendar_target.dart';
@@ -44,7 +45,14 @@ void main() {
     // 검증: 간격·테마·캘린더 항목이 보인다.
     expect(find.text('카운트 간격'), findsOneWidget);
     expect(find.byType(Slider), findsOneWidget);
-    for (final title in <String>['종소리', '색상 테마', '배경색', '버튼색', '캘린더 기록']) {
+    for (final title in <String>[
+      '알림 방식',
+      '맑은 종',
+      '색상 테마',
+      '배경색',
+      '버튼색',
+      '캘린더 기록',
+    ]) {
       await scrollTo(tester, find.text(title));
       expect(find.text(title), findsOneWidget);
     }
@@ -130,6 +138,41 @@ void main() {
     expect(
       testApp.repository.loadSettings(CounterRules.defaultSettings).bellSound,
       BellSound.clear,
+    );
+  });
+
+  testWidgets('alertMode_vibrationSelected_hidesSoundListAndSaves', (
+    tester,
+  ) async {
+    // 준비: 설정 화면을 연다.
+    final testApp = await openSettings(tester);
+
+    // 실행: 알림 방식을 진동으로 바꾼다.
+    await scrollAndTap(tester, find.text('진동'));
+    await tester.pumpAndSettle();
+
+    // 검증: 종소리 목록이 사라지고 저장된다.
+    expect(find.text('맑은 종'), findsNothing);
+    expect(
+      testApp.repository.loadSettings(CounterRules.defaultSettings).alertMode,
+      AlertMode.vibration,
+    );
+  });
+
+  testWidgets('intervalChip_fiveSecondsTapped_savesInterval', (tester) async {
+    // 준비: 설정 화면을 연다.
+    final testApp = await openSettings(tester);
+
+    // 실행: 5초 칩을 누른다.
+    await tester.tap(find.text('5초'));
+    await tester.pumpAndSettle();
+
+    // 검증: 5초로 저장된다.
+    expect(
+      testApp.repository
+          .loadSettings(CounterRules.defaultSettings)
+          .intervalSeconds,
+      5,
     );
   });
 

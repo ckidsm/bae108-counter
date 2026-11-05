@@ -22,26 +22,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get historyTooltip => '수행 기록';
 
   @override
-  String get intervalTitle => '절 간격';
-
-  @override
-  String get intervalCustom => '직접 설정';
-
-  @override
-  String intervalCustomSelected(String duration) {
-    return '직접 · $duration';
-  }
-
-  @override
-  String get customIntervalSheetTitle => '절 간격 직접 설정';
-
-  @override
   String customIntervalRange(String minimum, String maximum, String step) {
     return '$minimum ~ $maximum, $step 단위';
   }
-
-  @override
-  String get customIntervalApply => '적용';
 
   @override
   String durationSeconds(int seconds) {
@@ -335,7 +318,7 @@ class AppLocalizationsKo extends AppLocalizations {
       '알림 방식이 종소리일 때 울리는 소리입니다. 누르면 바로 들어 볼 수 있습니다';
 
   @override
-  String get soundDeep => '중저음 종 (기본)';
+  String get soundDeep => '중저음 종';
 
   @override
   String get soundClear => '맑은 종';
@@ -345,4 +328,15 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get soundMoktak => '목탁';
+
+  @override
+  String get summaryIntervalLabel => '절 간격';
+
+  @override
+  String get summaryAlertLabel => '알림';
+
+  @override
+  String summaryBellValue(String mode, String sound) {
+    return '$mode · $sound';
+  }
 }

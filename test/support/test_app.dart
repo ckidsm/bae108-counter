@@ -1,5 +1,10 @@
+import 'dart:convert';
+
 import 'package:bae108_counter/app.dart';
 import 'package:bae108_counter/controllers/app_settings_controller.dart';
+import 'package:bae108_counter/controllers/counter_rules.dart';
+import 'package:bae108_counter/models/alert_mode.dart';
+import 'package:bae108_counter/models/counter_settings.dart';
 import 'package:bae108_counter/models/calendar_target.dart';
 import 'package:bae108_counter/services/practice_record_repository.dart';
 import 'package:flutter/material.dart';
@@ -61,6 +66,7 @@ Future<TestApp> pumpTestApp(
   WidgetTester tester, {
   Locale locale = const Locale('ko'),
   bool resetPreferences = true,
+  int? intervalSeconds,
   FakeCalendarSyncService? calendarSyncService,
 }) async {
   // 휴대폰 크기 화면으로 맞춘다.
@@ -75,8 +81,16 @@ Future<TestApp> pumpTestApp(
   addTearDown(tester.platformDispatcher.clearLocalesTestValue);
   // 처음 실행이면 저장소를 비운다(재실행 흉내는 유지).
   if (resetPreferences) {
-    // 비어 있는 메모리 저장소
-    SharedPreferences.setMockInitialValues(<String, Object>{});
+    // 메모리 저장소(간격을 지정했으면 저장된 설정으로 넣어 둔다)
+    SharedPreferences.setMockInitialValues(<String, Object>{
+      if (intervalSeconds != null)
+        PreferenceKeys.counterSettings: jsonEncode(
+          CounterSettings(
+            intervalSeconds: intervalSeconds,
+            alertMode: AlertMode.bell,
+          ).toJson(),
+        ),
+    });
   }
   // 이전에 띄운 앱 상태가 재사용되지 않도록 화면을 비운다(앱 재실행 흉내).
   await tester.pumpWidget(const SizedBox.shrink());
@@ -140,30 +154,28 @@ Future<void> advanceSeconds(WidgetTester tester, int seconds) async {
 }
 
 /*────────────────────────────────────────────────────────────────────────
- Purpose  : Runs a full practice at a 5-second interval until the completion screen opens.
+ Purpose  : Starts a practice and advances fake time until the completion screen opens.
  Author   : YUNDEOKSOO                          Created : 2026-11-05
 ────────────────────────────────────────────────────────────────────────*/
-/// 5초 간격으로 시작해 108배를 마치고 회향 화면이 열릴 때까지 진행한다.
-Future<void> runPracticeToCompletion(WidgetTester tester) async {
-  // 5초 간격을 고른다.
-  await scrollAndTap(tester, find.text('5초'));
-  // 선택을 반영한다.
-  await tester.pumpAndSettle();
+/// 현재 간격([intervalSeconds])으로 시작해 108배를 마치고 회향 화면이 열릴 때까지 진행한다.
+Future<void> runPracticeToCompletion(
+  WidgetTester tester, {
+  int intervalSeconds = CounterRules.defaultIntervalSeconds,
+}) async {
   // 시작한다.
   await scrollAndTap(tester, find.text('시작'));
-  // 준비 10초 + 108배 x 5초를 5초씩 진행한다.
-  for (var stepIndex = 0; stepIndex < _completionSteps; stepIndex++) {
-    // 5초 진행
-    await tester.pump(const Duration(seconds: 5));
+  // 준비 시간을 진행한다.
+  await tester.pump(const Duration(seconds: CounterRules.preparationSeconds));
+  // 108배 + 1회(마지막 절을 확실히 넘기도록) 간격만큼 진행한다.
+  for (var bowIndex = 0; bowIndex <= CounterRules.targetBowCount; bowIndex++) {
+    // 간격 하나 진행
+    await tester.pump(Duration(seconds: intervalSeconds));
   }
   // 완료 후 회향 화면이 열리기까지(1.5초) 기다린다.
   await tester.pump(const Duration(seconds: 2));
   // 화면 전환을 마친다.
   await tester.pumpAndSettle();
 }
-
-// 준비 10초와 108배 x 5초를 5초 단위로 나눈 횟수(마지막 절을 확실히 넘기도록 1회 더)
-const int _completionSteps = (10 + 108 * 5) ~/ 5 + 1;
 
 /*────────────────────────────────────────────────────────────────────────
  Purpose  : Scrolls the top screen until a widget is built and visible.

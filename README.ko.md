@@ -16,7 +16,8 @@
 
 ## Key Features
 
-- **간격 카운트** – 5초·10초·20초 프리셋 또는 5초~3분(5초 단위) 직접 설정. (`lib/widgets/interval_selector.dart`, `lib/widgets/interval_slider.dart`, `lib/controllers/counter_rules.dart`)
+- **간격 카운트** – 5초·10초·20초 프리셋 또는 5초~3분(5초 단위)을 설정 화면에서 고릅니다. (`lib/screens/settings_screen.dart`, `lib/widgets/interval_slider.dart`, `lib/controllers/counter_rules.dart`)
+- **한 화면 메인** – 메인 화면은 현재 절 간격과 알림을 한 줄로 보여 주고(누르면 설정), 스크롤 없이 한 화면에 들어옵니다. 원형 카운터는 남은 높이에 맞춰 크기가 정해집니다. (`lib/widgets/settings_summary_bar.dart`, `lib/screens/main_screen.dart`, `lib/widgets/counter_ring.dart`)
 - **시작 | 정지 | 처음부터** – 시작으로 세기 시작하고, 정지는 센 수를 유지한 채 멈추며, 처음부터는 확인 후 0으로 되돌립니다. (`lib/widgets/counter_controls.dart`, `lib/screens/main_screen.dart`)
 - **10초 준비 카운트다운** – 0배부터 시작하면 10→1 카운트다운 뒤에 셈을 시작하고, 정지 후 다시 시작할 때는 건너뜁니다. (`lib/controllers/counter_controller.dart`)
 - **1배마다 알림** – 종소리·진동·무음, 108배째는 길게 알립니다. 종소리는 설정에서 중저음 종(기본)·맑은 종·풍경·목탁 중에 고를 수 있고, 소리 파일이 없으면 시스템 클릭음으로 대신합니다. (`lib/services/device_bow_feedback_service.dart`, `assets/sounds/`)
