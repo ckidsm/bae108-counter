@@ -19,4 +19,8 @@ enum BellSound {
   // 짧은 목탁
   /// A short wooden moktak knock.
   moktak,
+
+  // 맥놀이가 있는 크고 긴 범종(약 6초)
+  /// A large temple bell with slow beating, about six seconds long.
+  templeBell,
 }

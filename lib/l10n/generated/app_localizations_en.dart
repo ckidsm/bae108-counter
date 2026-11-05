@@ -333,6 +333,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get soundMoktak => 'Moktak';
 
   @override
+  String get soundTempleBell => 'Temple bell';
+
+  @override
   String get summaryIntervalLabel => 'Interval';
 
   @override

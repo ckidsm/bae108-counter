@@ -328,6 +328,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get soundMoktak => '木魚';
 
   @override
+  String get soundTempleBell => '梵鐘';
+
+  @override
   String get summaryIntervalLabel => '間隔';
 
   @override

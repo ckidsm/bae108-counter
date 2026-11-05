@@ -48,6 +48,8 @@ abstract final class SettingLabels {
       BellSound.chime => localizations.soundChime,
       // 목탁
       BellSound.moktak => localizations.soundMoktak,
+      // 범종
+      BellSound.templeBell => localizations.soundTempleBell,
     };
   }
 }

@@ -666,6 +666,12 @@ abstract class AppLocalizations {
   /// **'목탁'**
   String get soundMoktak;
 
+  /// No description provided for @soundTempleBell.
+  ///
+  /// In ko, this message translates to:
+  /// **'범종'**
+  String get soundTempleBell;
+
   /// No description provided for @summaryIntervalLabel.
   ///
   /// In ko, this message translates to:

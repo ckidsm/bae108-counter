@@ -326,6 +326,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get soundMoktak => '木鱼';
 
   @override
+  String get soundTempleBell => '梵钟';
+
+  @override
   String get summaryIntervalLabel => '间隔';
 
   @override

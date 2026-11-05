@@ -237,6 +237,7 @@
   "soundClear": "맑은 종",
   "soundChime": "풍경",
   "soundMoktak": "목탁",
+  "soundTempleBell": "범종",
   "summaryIntervalLabel": "절 간격",
   "summaryAlertLabel": "알림",
   "summaryBellValue": "{mode} · {sound}",

@@ -94,6 +94,7 @@
   "soundClear": "Clear bell",
   "soundChime": "Wind chime",
   "soundMoktak": "Moktak",
+  "soundTempleBell": "Temple bell",
   "summaryIntervalLabel": "Interval",
   "summaryAlertLabel": "Alert",
   "summaryBellValue": "{mode} · {sound}"

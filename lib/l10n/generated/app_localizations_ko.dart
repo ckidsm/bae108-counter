@@ -330,6 +330,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get soundMoktak => '목탁';
 
   @override
+  String get soundTempleBell => '범종';
+
+  @override
   String get summaryIntervalLabel => '절 간격';
 
   @override

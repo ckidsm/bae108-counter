@@ -39,6 +39,8 @@ abstract final class FeedbackSettings {
       BellSound.chime => 'sounds/chime.mp3',
       // 목탁
       BellSound.moktak => 'sounds/moktak.mp3',
+      // 범종
+      BellSound.templeBell => 'sounds/temple_bell.mp3',
     };
   }
 
@@ -49,6 +51,10 @@ abstract final class FeedbackSettings {
   // 108배째 종소리 사이 간격
   /// The gap between bell strikes for the final bow.
   static const Duration finalBellGap = Duration(milliseconds: 1400);
+
+  // 긴 범종의 108배째 타종 간격(여운이 너무 일찍 끊기지 않게)
+  /// The gap between strikes of the long temple bell for the final bow.
+  static const Duration finalLongBellGap = Duration(milliseconds: 3000);
 
   // 108배째 클릭음(종소리 파일이 없을 때)을 울리는 횟수
   /// How many times the fallback click plays for the final bow.
@@ -154,12 +160,15 @@ final class DeviceBowFeedbackService implements BowFeedbackService {
     for (var strikeIndex = 0; strikeIndex < repeatCount; strikeIndex++) {
       // 두 번째 타종부터는 앞 소리가 울릴 시간을 둔다.
       if (strikeIndex > 0) {
-        // 타종 사이 간격만큼 기다린다(짧은 목탁은 더 촘촘히).
-        await Future<void>.delayed(
-          bellSound == BellSound.moktak
-              ? FeedbackSettings.finalShortSoundGap
-              : FeedbackSettings.finalBellGap,
-        );
+        // 타종 사이 간격만큼 기다린다(소리 길이에 맞춰).
+        await Future<void>.delayed(switch (bellSound) {
+          // 짧은 목탁은 촘촘히
+          BellSound.moktak => FeedbackSettings.finalShortSoundGap,
+          // 긴 범종은 여운을 더 둔다
+          BellSound.templeBell => FeedbackSettings.finalLongBellGap,
+          // 나머지 종은 기본 간격
+          _ => FeedbackSettings.finalBellGap,
+        });
       }
       // 앞 소리가 남아 있으면 멈추고 처음부터 다시 친다.
       await _audioPlayer.stop();

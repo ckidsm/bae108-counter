@@ -94,6 +94,7 @@
   "soundClear": "清脆钟声",
   "soundChime": "风铃",
   "soundMoktak": "木鱼",
+  "soundTempleBell": "梵钟",
   "summaryIntervalLabel": "间隔",
   "summaryAlertLabel": "提醒",
   "summaryBellValue": "{mode} · {sound}"
